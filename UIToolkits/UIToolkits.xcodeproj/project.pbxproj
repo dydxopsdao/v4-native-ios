@@ -1736,7 +1736,7 @@
 			baseConfigurationReference = 946EEAA78022B56C6B378E35 /* Pods-iOS-UIAppToolkitsTests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = UIAppToolkitsTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1755,7 +1755,7 @@
 			baseConfigurationReference = 0F319D9DE3EF6DAF915D127C /* Pods-iOS-UIAppToolkitsTests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = UIAppToolkitsTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1889,7 +1889,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = UIToolkitsAppleTVTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1908,7 +1908,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = UIToolkitsAppleTVTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2119,7 +2119,7 @@
 			baseConfigurationReference = 668A73DB8721B9FD70685E16 /* Pods-iOS-UIToolkitsTests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = UIToolkitsTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2138,7 +2138,7 @@
 			baseConfigurationReference = 17B0FA87BC34A4B27C1C6700 /* Pods-iOS-UIToolkitsTests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = UIToolkitsTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
