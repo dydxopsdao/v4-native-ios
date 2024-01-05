@@ -1533,7 +1533,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = UtilitiesAppleTVTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1552,7 +1552,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = UtilitiesAppleTVTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1817,7 +1817,7 @@
 			baseConfigurationReference = 81539FD394D7847D50BD4749 /* Pods-iOS-UtilitiesTests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = UtilitiesTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1836,7 +1836,7 @@
 			baseConfigurationReference = 439FD4525821BD140CEE8DB1 /* Pods-iOS-UtilitiesTests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = UtilitiesTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
