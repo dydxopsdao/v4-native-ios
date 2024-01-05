@@ -1150,7 +1150,7 @@
 			baseConfigurationReference = BCB7953AE47B2AB20BC5F4A2 /* Pods-iOS-CameraParticlesTests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = CameraParticlesTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1170,7 +1170,7 @@
 			baseConfigurationReference = 2D120953B7734D9A8E644E5D /* Pods-iOS-CameraParticlesTests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = CameraParticlesTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
