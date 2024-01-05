@@ -2701,7 +2701,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = PlatformParticlesAppleTVTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2720,7 +2720,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = PlatformParticlesAppleTVTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2922,7 +2922,7 @@
 			baseConfigurationReference = C0294673341C6FE9011A57B7 /* Pods-iOS-PlatformParticlesTests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = PlatformParticlesTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2941,7 +2941,7 @@
 			baseConfigurationReference = B09049A22701CF86FA5E0853 /* Pods-iOS-PlatformParticlesTests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = PlatformParticlesTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3017,7 +3017,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = MessageParticlesTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3036,7 +3036,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = MessageParticlesTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
