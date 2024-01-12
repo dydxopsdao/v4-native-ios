@@ -1,1 +1,39 @@
+To see how the app functions for trading, please see the video at https://www.youtube.com/watch?v=j1hflTjqfpc
+To enable trade execution with a test wallet (simulated funds), you must connect to the test environment
+    1. Have the app running.
+    2. In mobile Safari, type “dydx:///settings/debug” and enter. (Make sure there are three slashes after dydx:)
+    3. When Safari prompts “Open this page in “dYdX”?“, tap “Open”.
+    4. The app will open a settings page. Select "v4 Public Testnet" under “Endpoint” at the bottom of the screen.
+    5. Tap “Done” to close the view.
+    6. Kill the app and restart.
+ 
+Then, to connect a pre-funded test wallet with simulated trading funds
+    1. Tap the |> button.
+    2. Select “Sync with Desktop” on the second screen.
+    3. Scan the barcode in the attached file.
+    4. When prompted, enter the code from the screenshot.
 
+Q: Confirm in which specific countries or regions you intend to make your app's cryptocurrency exchange services available.
+A: It's available in all countries, except Afghanistan, Canada, China mainland, Morocco, UK and US.
+
+Q: Provide documentary evidence of the licensing and permissions for the cryptocurrency exchange services in your app for all of the countries or regions where your app is available. The documentation you provide should indicate where you intend to distribute your app. 
+Q: Provide links to government websites that display the licenses you've secured to provide exchange services in all the countries or regions where your app is available.
+A: Licensing and permissions to operate in the countries intended for distribution (all available, except Afghanistan, Canada, China mainland, Marocco, UK and US) is not a legal requirement at the time of submission.
+
+Q: Provide information on the third-party exchange APIs that your app connects with, including links to public APIs and documentation of partnership with specific third-party exchanges.
+A: The App connects to the public indexer (https://docs.dydx.trade/networks/network1/resources#indexer-endpoints) and the publicly available full node REST endpoints (https://docs.dydx.trade/networks/network1/resources#rest) of the dYdX Chain - a permissionless, proof of stake blockchain, built with the CosmosSDK. More on the Indexer API: https://docs.dydx.trade/developers/clients/indexer_client
+
+Q: Do the cryptocurrency exchange transactions occur between the users and the exchange(s) or do you, as the developer, handle the transaction requests with the exchange(s) directly?
+A: The App does not provide spot-exchange functionality, it is an interface for a perpetual contracts exchange - no order matching/exchanges happen within the App itself, it serves as an interface for the user to publish orders to the dYdX Chain, as well as to read and interpret order updates.
+
+Q: Are the cryptocurrency exchange features provided in your app decentralized, centralized, or a mix of decentralized and centralized exchange features?
+A: dYdX Chain is a Public Permissionless Decentralized Proof-of-stake blockchain, and the App provides an interface to use the functionalities of the blockchain.
+
+Q: Does your app offer new or exclusive tokens or cryptocurrency to users? If so, which ones and on which exchanges can users obtain the currency?
+A: No exclusive of new tokens or cryptocurrency are offered to users.
+
+Q: Explain the precautions you've taken to comply with anti-money laundering ("AML") and Know Your Customer ("KYC") requirements.
+A: The App and App services are geoblocking restricted and sanctioned regions, and also make use of external provider to risk-score connecting user and access to ones that score high for money-laundering and OFAC.
+
+Q: If you intend to distribute your app in the US, provide a copy of your Money Services Business (MSB) registration. Additionally, confirm that you will restrict your app's availability to the states listed on your MSB registration.
+A: We do not intend to distribute the App in the US.
