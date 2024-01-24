@@ -6,8 +6,8 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:v4.testnet.dydx.exchange</string>
-		<string>applinks:v4.testnet.dydx.exchange?mode=developer</string>
+		<string>applinks:dydx.trade</string>
+		<string>applinks:dydx.trade?mode=developer</string>
 	</array>
 </dict>
 </plist>
