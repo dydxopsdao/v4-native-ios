@@ -1,15 +1,15 @@
 {
     "defaults": {
         "scheme":"https",
-        "host":"dydx.exchange"
+        "host":"dydx.trade"
     },
     "aliases":{
         "{APP_SCHEME}":"https",
         "http":"https",
         "action":"https",
-        "go.to":"dydx.exchange",
-        "trade.dydx.exchange":"dydx.exchange",
-        "trade.stage.dydx.exchange":"dydx.exchange",
+        "go.to":"dydx.trade",
+        "trade.dydx.trade":"dydx.trade",
+        "trade.stage.dydx.trade":"dydx.trade",
         "/fees/fees":"/portfolio/fees",
         "/history/history":"/portfolio/history",
         "/orders/orders":"/portfolio/ORDERS",
@@ -37,7 +37,7 @@
                     "destination":"PlatformParticles.SafariActionBuilder"
                 }
             },
-            "dydx.exchange":{
+            "dydx.trade":{
                 "/privacy":{
                     "destination":"Web.storyboard",
                     "presentation":"prompt"
