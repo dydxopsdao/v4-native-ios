@@ -661,18 +661,18 @@ app:
   - BITRISE_SCHEME: dydxV4
     opts:
       is_expand: false
-  - BITRISE_DISTRIBUTION_METHOD: <DISTRIBUTION_METHOD>
+  - BITRISE_DISTRIBUTION_METHOD: development
     opts:
       is_expand: false
   - opts:
       is_expand: false
-    PRODUCT_BUNDLE_IDENTIFIER: <PRODUCT_BUNDLE_IDENTIFIER>
+    PRODUCT_BUNDLE_IDENTIFIER: trade.dydx
   - opts:
       is_expand: false
-    WEB_GIT_REPO_SSH_URL: <WEB_GIT_REPO_SSH_URL>
+    WEB_GIT_REPO_SSH_URL: https://github.com/dydxopsdao/v4-web.git
   - opts:
       is_expand: false
-    APPLE_DEVELOPMENT_TEAM: <APPLE_DEVELOPMENT_TEAM>
+    APPLE_DEVELOPMENT_TEAM: H5FGS54UD8
 trigger_map:
 - push_branch: releases/*
   workflow: deploy
