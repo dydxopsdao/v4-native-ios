@@ -1000,7 +1000,7 @@
 			baseConfigurationReference = 2AC82E9412F0658CCD3B5F99 /* Pods-iOS-FirebaseStaticInjectionsTests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = FirebaseStaticInjectionsTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1020,7 +1020,7 @@
 			baseConfigurationReference = 7AF31C47E0D98E7411788154 /* Pods-iOS-FirebaseStaticInjectionsTests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 75C6UARB5H;
+				DEVELOPMENT_TEAM = H5FGS54UD8;
 				INFOPLIST_FILE = FirebaseStaticInjectionsTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				LD_RUNPATH_SEARCH_PATHS = (
