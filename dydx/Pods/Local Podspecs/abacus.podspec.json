@@ -4,7 +4,7 @@
   "homepage": "https://github.com/dydxprotocol/v4-abacus",
   "source": {
     "git": "git@github.com:dydxprotocol/v4-abacus.git",
-    "tag": "v1.13.13"
+    "branch": "mike/fix-serialization"
   },
   "authors": "",
   "license": "",
