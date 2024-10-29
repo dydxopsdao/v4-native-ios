@@ -51,7 +51,7 @@ else
   git push --tags origin main
 fi
 
-
+git checkout mike/fix-serialization
 cd $scriptDir/..
 
 echo "=================================="
