@@ -1,5 +1,5 @@
 PODS:
-  - abacus (0.4.18)
+  - Abacus (1.13.13)
   - AmplitudeSwift (1.9.4):
     - AnalyticsConnector (~> 1.0.1)
   - AnalyticsConnector (1.0.3)
@@ -267,7 +267,7 @@ PODS:
   - ZSWTappableLabel (3.3.2)
 
 DEPENDENCIES:
-  - abacus (from `~/v4-abacus`)
+  - Abacus (from `../podspecs/Abacus.podspec`)
   - AmplitudeSwift (~> 1.0)
   - AppsFlyerFramework
   - Atributika
@@ -370,8 +370,8 @@ SPEC REPOS:
     - ZSWTappableLabel
 
 EXTERNAL SOURCES:
-  abacus:
-    :path: "~/v4-abacus"
+  Abacus:
+    :podspec: "../podspecs/Abacus.podspec"
   DGCharts:
     :branch: releases/3.6.0.4
     :git: https://github.com/dydxprotocol/Charts.git
@@ -382,7 +382,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/dydxprotocol/Charts.git
 
 SPEC CHECKSUMS:
-  abacus: 46f62be6dc9b3f888093eb2c9952d0267ab40670
+  Abacus: 2868046638aa194188f754d36dc3063e226c9332
   AmplitudeSwift: d10ae6afdb0740e4ae843866bce8ab1119a53d74
   AnalyticsConnector: a53214d38ae22734c6266106c0492b37832633a9
   AppsFlyerFramework: ad7ff0d22aa36c7f8cc4f71a5424e19b89ccb8ae
@@ -441,6 +441,6 @@ SPEC CHECKSUMS:
   Validator: 80a6f567220c962dfd2d9928ae98a8c1d164f6f4
   ZSWTappableLabel: 92f11d677bb395a8294df48482316c4981783ca0
 
-PODFILE CHECKSUM: 705523f205bf4ca5b7d987c0309c838e352c066f
+PODFILE CHECKSUM: 553823b5ab70e1fe233c6a834ad450bcb98974db
 
 COCOAPODS: 1.15.2

@@ -70,7 +70,7 @@ public class Installation {
         if isJailBroken {
             return .jailBroken
         } else if isDebug {
-            return .testFlight
+            return .debug
         } else if isTestFlight {
             return .testFlight
         } else {

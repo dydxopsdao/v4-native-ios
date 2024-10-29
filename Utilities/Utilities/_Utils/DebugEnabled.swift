@@ -13,7 +13,7 @@ public struct DebugEnabled {
 
     public static var enabled: Bool {
         switch Installation.source {
-        case .debug: return false //true
+        case .debug: return true
         case .testFlight: return UserDefaults.standard.bool(forKey: key)
         case .appStore, .jailBroken: return false
         }

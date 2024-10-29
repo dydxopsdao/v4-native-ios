@@ -5330,7 +5330,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-## abacus
+## Abacus
 
 Copyright (C) dYdX Trading Inc.
 
