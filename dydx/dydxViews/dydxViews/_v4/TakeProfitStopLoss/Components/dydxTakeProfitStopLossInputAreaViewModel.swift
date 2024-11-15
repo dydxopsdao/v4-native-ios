@@ -37,6 +37,9 @@ public class dydxTakeProfitStopLossInputAreaModel: PlatformViewModel {
         set: { [weak self] in self?.isStopLossTooltipPresented = $0 }
     )
 
+    @Published public var onClearTakeProfit: (() -> Void)?
+    @Published public var onClearStopLoss: (() -> Void)?
+
     public static var previewValue: dydxTakeProfitStopLossInputAreaModel = {
         let vm = dydxTakeProfitStopLossInputAreaModel()
         vm.gainInputViewModel = dydxGainLossInputViewModel(triggerType: .takeProfit)
@@ -99,20 +102,26 @@ public class dydxTakeProfitStopLossInputAreaModel: PlatformViewModel {
     }
 
     private func createClearButton(triggerType: dydxTakeProfitStopLossInputAreaModel.TriggerType) -> AnyView? {
-        guard let numOrders = triggerType == .takeProfit ? numOpenTakeProfitOrders : numOpenStopLossOrders else { return nil }
-        if numOrders <= 1 {
+        let hasInput: Bool
+        switch triggerType {
+        case .takeProfit:
+            hasInput = takeProfitPriceInputViewModel?.value?.isNotEmpty ?? false
+        case .stopLoss:
+            hasInput = stopLossPriceInputViewModel?.value?.isNotEmpty ?? false
+        }
+        if hasInput {
             return Text(localizerPathKey: "APP.GENERAL.CLEAR")
                 .themeFont(fontType: .base, fontSize: .medium)
                 .themeColor(foreground: .colorRed)
                 .onTapGesture { [weak self] in
                     PlatformView.hideKeyboard()
-                    switch triggerType {
-                    case .takeProfit:
-                        self?.takeProfitPriceInputViewModel?.onEdited?(nil)
-                        self?.gainInputViewModel?.clear()
-                    case .stopLoss:
-                        self?.stopLossPriceInputViewModel?.onEdited?(nil)
-                        self?.lossInputViewModel?.clear()
+                    DispatchQueue.main.async { // wait for the keyboard to dismiss
+                        switch triggerType {
+                        case .takeProfit:
+                            self?.onClearTakeProfit?()
+                        case .stopLoss:
+                            self?.onClearStopLoss?()
+                        }
                     }
                 }
                 .wrappedInAnyView()
@@ -129,7 +138,7 @@ public class dydxTakeProfitStopLossInputAreaModel: PlatformViewModel {
     }
 
     public override func createView(parentStyle: ThemeStyle = ThemeStyle.defaultStyle, styleKey: String? = nil) -> PlatformView {
-        PlatformView(viewModel: self, parentStyle: parentStyle, styleKey: styleKey) { [weak self] _  in
+        PlatformView(viewModel: self, parentStyle: parentStyle, styleKey: styleKey) { [weak self] style  in
             guard let self = self else { return AnyView(PlatformView.nilView) }
 
             return VStack(spacing: 0) {
@@ -137,26 +146,26 @@ public class dydxTakeProfitStopLossInputAreaModel: PlatformViewModel {
                     VStack(alignment: .leading, spacing: 16) {
                         self.createSectionHeader(triggerType: .takeProfit)
                         if self.hasMultipleTakeProfitOrders {
-                            self.multipleOrdersExistViewModel?.createView(parentStyle: parentStyle, styleKey: styleKey)
+                            self.multipleOrdersExistViewModel?.createView(parentStyle: style, styleKey: styleKey)
                         } else {
                             HStack(spacing: 12) {
-                                self.takeProfitPriceInputViewModel?.createView(parentStyle: parentStyle, styleKey: styleKey)
-                                self.gainInputViewModel?.createView(parentStyle: parentStyle, styleKey: styleKey)
+                                self.takeProfitPriceInputViewModel?.createView(parentStyle: style, styleKey: styleKey)
+                                self.gainInputViewModel?.createView(parentStyle: style, styleKey: styleKey)
                             }
                         }
-                        self.takeProfitAlert?.createView(parentStyle: parentStyle, styleKey: styleKey)
+                        self.takeProfitAlert?.createView(parentStyle: style, styleKey: styleKey)
                     }
                     VStack(alignment: .leading, spacing: 16) {
                         self.createSectionHeader(triggerType: .stopLoss)
                         if self.hasMultipleStopLossOrders {
-                            self.multipleOrdersExistViewModel?.createView(parentStyle: parentStyle, styleKey: styleKey)
+                            self.multipleOrdersExistViewModel?.createView(parentStyle: style, styleKey: styleKey)
                         } else {
                             HStack(spacing: 12) {
-                                self.stopLossPriceInputViewModel?.createView(parentStyle: parentStyle, styleKey: styleKey)
-                                self.lossInputViewModel?.createView(parentStyle: parentStyle, styleKey: styleKey)
+                                self.stopLossPriceInputViewModel?.createView(parentStyle: style, styleKey: styleKey)
+                                self.lossInputViewModel?.createView(parentStyle: style, styleKey: styleKey)
                             }
                         }
-                        self.stopLossAlert?.createView(parentStyle: parentStyle, styleKey: styleKey)
+                        self.stopLossAlert?.createView(parentStyle: style, styleKey: styleKey)
                     }
                 }
             }
