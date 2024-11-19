@@ -102,6 +102,14 @@ class dydxMarketPriceCandlesViewPresenter: HostedViewPresenter<dydxMarketPriceCa
         }
     }
 
+    @Published private var currentTypeIndex: Int? {
+        didSet {
+            if let currentTypeIndex = currentTypeIndex, currentTypeIndex != oldValue {
+                viewModel?.control.types.currentDisplayType = currentTypeIndex
+            }
+        }
+    }
+
     override init() {
         super.init()
 
@@ -110,17 +118,9 @@ class dydxMarketPriceCandlesViewPresenter: HostedViewPresenter<dydxMarketPriceCa
         // Control
         viewModel?.control.types.displayTypes = ChartType.displayTypes.map(\.text)
         viewModel?.control.types.onDisplayTypeChanged = { [weak self] index in
-            guard let self = self else { return }
-            if index < ChartType.displayTypes.count {
-                let displayType = ChartType.displayTypes[index]
-                switch displayType.typeId {
-                case .candles:
-                    self.combinedGraph.presenters = [self.candlesGraph, self.barGraph]
-                case .line:
-                    self.combinedGraph.presenters = [self.lineGraph, self.barGraph]
-                }
-            }
+            self?.currentTypeIndex = index
         }
+        currentTypeIndex = 0
 
         viewModel?.control.resolutions.options = Resolution.allResolutions.map { resolution in
             InputSelectOption(value: resolution.key.v4Key, string: DataLocalizer.localize(path: resolution.text))
@@ -151,23 +151,46 @@ class dydxMarketPriceCandlesViewPresenter: HostedViewPresenter<dydxMarketPriceCa
     override func start() {
         super.start()
 
-        let candlesPublisher = $marketId
-            .compactMap { $0 }
-            .flatMap { AbacusStateManager.shared.state.candles(of: $0) }
-
-        Publishers
-            .CombineLatest4($marketId,
-                            AbacusStateManager.shared.state.marketMap,
-                            candlesPublisher,
-                            $currentResolutionIndex.compactMap { $0 })
-            .sink { [weak self] marketId, marketMap, candles, resolutionIndex in
-                guard let marketId = marketId, let market = marketMap[marketId] else { return }
-                self?.tickSize = market.configs?.displayTickSize?.doubleValue
-                if let candles = candles {
-                    self?.updateGraphData(candles: candles, resolutionIndex: resolutionIndex)
-                }
+        $currentTypeIndex.compactMap { $0 }
+            .sink { [weak self] index in
+                self?.updateChartType(index: index)
             }
             .store(in: &subscriptions)
+
+        Publishers
+            .CombineLatest($marketId,
+                            AbacusStateManager.shared.state.marketMap)
+            .sink { [weak self] marketId, marketMap in
+                guard let marketId = marketId, let market = marketMap[marketId] else { return }
+                self?.tickSize = market.configs?.displayTickSize?.doubleValue
+            }
+            .store(in: &subscriptions)
+
+        let candlesPublisher = $marketId
+                   .compactMap { $0 }
+                   .flatMapLatest { AbacusStateManager.shared.state.candles(of: $0) }
+                   .compactMap { $0 }
+                   .removeDuplicates()
+
+        Publishers
+            .CombineLatest(candlesPublisher,
+                           $currentResolutionIndex.compactMap { $0 })
+            .sink { [weak self] candles, resolutionIndex in
+                self?.updateGraphData(candles: candles, resolutionIndex: resolutionIndex)
+            }
+            .store(in: &subscriptions)
+    }
+
+    private func updateChartType(index: Int) {
+        if index < ChartType.displayTypes.count {
+            let displayType = ChartType.displayTypes[index]
+            switch displayType.typeId {
+            case .candles:
+                self.combinedGraph.presenters = [self.candlesGraph, self.barGraph]
+            case .line:
+                self.combinedGraph.presenters = [self.lineGraph, self.barGraph]
+            }
+        }
     }
 
     private func updateGraphData(candles: MarketCandles, resolutionIndex: Int) {
@@ -180,8 +203,7 @@ class dydxMarketPriceCandlesViewPresenter: HostedViewPresenter<dydxMarketPriceCa
             xAxisFormatter.resolution = resolution.key
         }
         if let candles = candles.candles?[resolution.key.v4Key] {
-            let candleDataPoints =
-                Array(candles)
+            let candleDataPoints = candles
                     .map { candle in
                         CandleDataPoint(candle: candle, resolution: resolution.key)
                     }
