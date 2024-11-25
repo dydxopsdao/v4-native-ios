@@ -28,9 +28,8 @@ public class dydxAdjustMarginReceiptViewModel: PlatformViewModel {
             guard let self = self else { return AnyView(PlatformView.nilView) }
 
             let view = VStack(spacing: 8) {
-                ForEach(self.receiptChangeItems.indices, id: \.self) { index in
-                    self.receiptChangeItems[index]
-                        .createView(parentStyle: style)
+                ForEach(self.receiptChangeItems, id: \.id) { item in
+                    item.createView(parentStyle: style)
                 }
             }
                 .padding(padding)

@@ -28,7 +28,7 @@ public class FirebaseNotificationHandler: NotificationHandler {
             if token != oldValue {
                 updateAssociation()
                 if let token = token {
-                    Console.shared.log("Firebase registration token: \(token)")
+                    NSLog("Firebase registration token: \(token)")
                 }
                 switch Installation.source {
                 case .debug, .testFlight:
@@ -44,7 +44,6 @@ public class FirebaseNotificationHandler: NotificationHandler {
         self.tag = tag
         super.init()
 
-        _ = FirebaseRunner.shared
         Messaging.messaging().delegate = self
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
             self?.token = Messaging.messaging().fcmToken
