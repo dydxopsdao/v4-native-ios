@@ -11,13 +11,10 @@ import PlatformUI
 import Utilities
 
 public class dydxDebugScanViewModel: dydxWalletListItemView {
-    @Published public var text: String?
-
     public init() { }
 
     public static var previewValue: dydxDebugScanViewModel {
         let vm = dydxDebugScanViewModel()
-        vm.text = "Test String"
         return vm
     }
 

@@ -10,7 +10,7 @@ import Combine
 import Abacus
 import Cartera
 import BigInt
-import web3
+import Web3
 import dydxCartera
 
 struct ERC20ApprovalStep: AsyncStep {
@@ -22,13 +22,13 @@ struct ERC20ApprovalStep: AsyncStep {
     let ethereumAddress: String
     let spenderAddress: String
     let provider: CarteraProvider
-    let walletId: String
+    let walletId: String?
     let chainIdInt: Int
     let amount: BigUInt
 
     private let ethereumInteractor: EthereumInteractor
 
-    init(chainRpc: String, tokenAddress: String, ethereumAddress: String, spenderAddress: String, provider: CarteraProvider, walletId: String, chainIdInt: Int, amount: BigUInt) {
+    init(chainRpc: String, tokenAddress: String, ethereumAddress: String, spenderAddress: String, provider: CarteraProvider, walletId: String?, chainIdInt: Int, amount: BigUInt) {
         self.chainRpc = chainRpc
         self.tokenAddress = tokenAddress
         self.ethereumAddress = ethereumAddress
@@ -41,9 +41,14 @@ struct ERC20ApprovalStep: AsyncStep {
     }
 
     func run() -> AnyPublisher<AsyncEvent<ProgressType, ResultType>, Never> {
-        let function = ERC20ApproveFunction(contract: EthereumAddress(tokenAddress),
-                                            from: EthereumAddress(ethereumAddress),
-                                            spender: EthereumAddress(spenderAddress),
+        guard let contract = try? EthereumAddress(hex: tokenAddress, eip55: false),
+              let from = try? EthereumAddress(hex: ethereumAddress, eip55: false),
+              let spender = try? EthereumAddress(hex: spenderAddress, eip55: false) else {
+            return Just(AsyncEvent.result(false, nil)).eraseToAnyPublisher()
+        }
+        let function = ERC20ApproveFunction(contract: contract,
+                                            from: from,
+                                            spender: spender,
                                             amount: amount)
         guard let transaction = try? function.transaction() else {
             return Just(AsyncEvent.result(false, nil)).eraseToAnyPublisher()

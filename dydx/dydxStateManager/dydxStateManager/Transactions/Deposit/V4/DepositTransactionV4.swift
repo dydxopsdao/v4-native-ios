@@ -11,7 +11,7 @@ import Cartera
 import Combine
 import Foundation
 import Utilities
-import web3
+import Web3
 
 struct DepositTransactionV4: AsyncStep {
     typealias ProgressType = Void
@@ -27,7 +27,6 @@ struct DepositTransactionV4: AsyncStep {
     func run() -> AnyPublisher<AsyncEvent<Void, ResultType>, Never> {
         guard let targetAddress = transferInput.requestPayload?.targetAddress,
               let tokenSize = transferInput.tokenSize,
-              let walletId = walletId,
               let chainId = transferInput.chain,
               let chainIdInt = Parser.standard.asInt(chainId),
               let payload = transferInput.requestPayload,
@@ -38,29 +37,14 @@ struct DepositTransactionV4: AsyncStep {
             return Just(AsyncEvent.result(nil, error)).eraseToAnyPublisher()
         }
 
-        return WalletSwitchChainStep(transferInput: transferInput, provider: provider, walletId: walletId)
+        return EnableERC20TokenStep(chainRpc: chainRpc,
+                                    tokenAddress: tokenAddress,
+                                    ethereumAddress: walletAddress,
+                                    spenderAddress: targetAddress,
+                                    desiredAmount: tokenSize,
+                                    walletId: walletId,
+                                    chainIdInt: chainIdInt)
             .run()
-            .flatMap { event -> AnyPublisher<AsyncEvent<Void, Bool>, Never> in
-                if case let .result(success, error) = event {
-                    if success == true {
-                        return EnableERC20TokenStep(chainRpc: chainRpc,
-                                                    tokenAddress: tokenAddress,
-                                                    ethereumAddress: walletAddress,
-                                                    spenderAddress: targetAddress,
-                                                    desiredAmount: tokenSize,
-                                                    walletId: walletId,
-                                                    chainIdInt: chainIdInt)
-                            .run()
-
-                    } else if let error = error {
-                        return Just(AsyncEvent.result(nil, error)).eraseToAnyPublisher()
-                    } else {
-                        let error = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Chain mismatch"])
-                        return Just(AsyncEvent.result(nil, error)).eraseToAnyPublisher()
-                    }
-                }
-                return Empty<AsyncEvent<Void, Bool>, Never>().eraseToAnyPublisher()
-            }
             .flatMap { event -> AnyPublisher<AsyncEvent<Void, String>, Never> in
                 if case let .result(enabled, error) = event {
                     if enabled == true {
@@ -108,17 +92,25 @@ private extension TransferInput {
 
 private extension EthereumTransactionRequest {
     init?(requestPayload: TransferInputRequestPayload, chainId: Int?, walletAddress: String) {
-        guard let targetAddress = requestPayload.targetAddress, let data = requestPayload.data else {
+        guard let targetAddress = requestPayload.targetAddress,
+              let payloadData = requestPayload.data,
+              let data = try? EthereumData.string(payloadData),
+              let from = try? EthereumAddress(hex: walletAddress, eip55: false),
+              let to = try? EthereumAddress(hex: targetAddress, eip55: false) else {
             return nil
         }
-        let transaction = EthereumTransaction(from: EthereumAddress(walletAddress),
-                                              to: EthereumAddress(targetAddress),
-                                              value: requestPayload.value?.asBigUInt,
-                                              data: data.web3.hexData,
-                                              nonce: nil,
-                                              gasPrice: nil,
-                                              gasLimit: nil,
-                                              chainId: chainId)
+
+        let value: EthereumQuantity?
+        if let payloadValue = requestPayload.value {
+            value = try? EthereumQuantity(payloadValue)
+        } else {
+            value = nil
+        }
+
+        let transaction = EthereumTransaction(from: from,
+                                              to: to,
+                                              value: value,
+                                              data: data)
 
         self.init(transaction: transaction)
     }

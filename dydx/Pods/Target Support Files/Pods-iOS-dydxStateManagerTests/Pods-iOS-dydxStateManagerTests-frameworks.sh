@@ -176,24 +176,22 @@ code_sign_if_enabled() {
 }
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_framework "${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CombineExt/CombineExt.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/KVOController/KVOController.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/ReachabilitySwift/Reachability.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SimpleKeychain/SimpleKeychain.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Validator/Validator.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework"
-  install_framework "${PODS_ROOT}/Abacus/build/cocoapods/framework/Abacus.framework"
+  install_framework "${PODS_ROOT}/../../../v4-abacus/build/cocoapods/framework/Abacus.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_framework "${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CombineExt/CombineExt.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/KVOController/KVOController.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/ReachabilitySwift/Reachability.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SimpleKeychain/SimpleKeychain.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Validator/Validator.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework"
-  install_framework "${PODS_ROOT}/Abacus/build/cocoapods/framework/Abacus.framework"
+  install_framework "${PODS_ROOT}/../../../v4-abacus/build/cocoapods/framework/Abacus.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then
   wait
