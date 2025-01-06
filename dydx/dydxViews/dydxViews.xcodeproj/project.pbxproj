@@ -113,6 +113,7 @@
 		0284201629AD71B600C0E7CC /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0284201529AD71B600C0E7CC /* Enums.swift */; };
 		02860A9129C15E670079E644 /* dydxOnboardScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02860A8429C15E670079E644 /* dydxOnboardScanView.swift */; };
 		02865DD62CE7C4F100F03BC8 /* dydxMarketsSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02865DD52CE7C4F100F03BC8 /* dydxMarketsSearchView.swift */; };
+		028CF1342D1489DD00476930 /* dydxSimpleUIMarketSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 028CF1332D1489DD00476930 /* dydxSimpleUIMarketSearchView.swift */; };
 		028DB33E2A0589270090BE58 /* dydxProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 028DB33D2A0589270090BE58 /* dydxProfileHeaderView.swift */; };
 		02934CE5290067F1005DB99C /* SideChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02934CE4290067F1005DB99C /* SideChange.swift */; };
 		0297A0F72A6109E500619181 /* ProgressStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A0F62A6109E500619181 /* ProgressStepView.swift */; };
@@ -140,6 +141,8 @@
 		02D6DAE92D12349A008AAEA1 /* dydxSimpleUIMarketsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D6DAE82D12349A008AAEA1 /* dydxSimpleUIMarketsView.swift */; };
 		02D6DB172D124A8C008AAEA1 /* dydxAppModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D6DB162D124A8C008AAEA1 /* dydxAppModeView.swift */; };
 		02D6DBB12D12770D008AAEA1 /* Checkmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D6DBB02D12770A008AAEA1 /* Checkmark.swift */; };
+		02D6DBB42D134723008AAEA1 /* dydxSimpleUIMarketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D6DBB32D134723008AAEA1 /* dydxSimpleUIMarketView.swift */; };
+		02D6DBB62D134BCF008AAEA1 /* dydxSimpleUIMarketListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D6DBB52D134BCF008AAEA1 /* dydxSimpleUIMarketListView.swift */; };
 		02D9518A2C926B8E007BB2B4 /* dydxNotificationPrimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D951892C926B8E007BB2B4 /* dydxNotificationPrimerView.swift */; };
 		02DC87852CD441A900F865C5 /* dydxVaultHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DC87842CD441A900F865C5 /* dydxVaultHistoryView.swift */; };
 		02DC87972CD452BB00F865C5 /* dydxVaultHistoryItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DC87962CD452BB00F865C5 /* dydxVaultHistoryItemView.swift */; };
@@ -510,6 +513,7 @@
 		0284201529AD71B600C0E7CC /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		02860A8429C15E670079E644 /* dydxOnboardScanView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = dydxOnboardScanView.swift; sourceTree = "<group>"; };
 		02865DD52CE7C4F100F03BC8 /* dydxMarketsSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxMarketsSearchView.swift; sourceTree = "<group>"; };
+		028CF1332D1489DD00476930 /* dydxSimpleUIMarketSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxSimpleUIMarketSearchView.swift; sourceTree = "<group>"; };
 		028DB33D2A0589270090BE58 /* dydxProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxProfileHeaderView.swift; sourceTree = "<group>"; };
 		02934CE4290067F1005DB99C /* SideChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideChange.swift; sourceTree = "<group>"; };
 		0297A0F62A6109E500619181 /* ProgressStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressStepView.swift; sourceTree = "<group>"; };
@@ -537,6 +541,8 @@
 		02D6DAE82D12349A008AAEA1 /* dydxSimpleUIMarketsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxSimpleUIMarketsView.swift; sourceTree = "<group>"; };
 		02D6DB162D124A8C008AAEA1 /* dydxAppModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxAppModeView.swift; sourceTree = "<group>"; };
 		02D6DBB02D12770A008AAEA1 /* Checkmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Checkmark.swift; sourceTree = "<group>"; };
+		02D6DBB32D134723008AAEA1 /* dydxSimpleUIMarketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxSimpleUIMarketView.swift; sourceTree = "<group>"; };
+		02D6DBB52D134BCF008AAEA1 /* dydxSimpleUIMarketListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxSimpleUIMarketListView.swift; sourceTree = "<group>"; };
 		02D951892C926B8E007BB2B4 /* dydxNotificationPrimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxNotificationPrimerView.swift; sourceTree = "<group>"; };
 		02DC87842CD441A900F865C5 /* dydxVaultHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxVaultHistoryView.swift; sourceTree = "<group>"; };
 		02DC87962CD452BB00F865C5 /* dydxVaultHistoryItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxVaultHistoryItemView.swift; sourceTree = "<group>"; };
@@ -1437,6 +1443,7 @@
 		02D6DAE72D12344E008AAEA1 /* Markets */ = {
 			isa = PBXGroup;
 			children = (
+				02D6DBB22D13470D008AAEA1 /* components */,
 				02D6DAE82D12349A008AAEA1 /* dydxSimpleUIMarketsView.swift */,
 			);
 			path = Markets;
@@ -1448,6 +1455,16 @@
 				02D6DB162D124A8C008AAEA1 /* dydxAppModeView.swift */,
 			);
 			path = AppMode;
+			sourceTree = "<group>";
+		};
+		02D6DBB22D13470D008AAEA1 /* components */ = {
+			isa = PBXGroup;
+			children = (
+				02D6DBB32D134723008AAEA1 /* dydxSimpleUIMarketView.swift */,
+				02D6DBB52D134BCF008AAEA1 /* dydxSimpleUIMarketListView.swift */,
+				028CF1332D1489DD00476930 /* dydxSimpleUIMarketSearchView.swift */,
+			);
+			path = components;
 			sourceTree = "<group>";
 		};
 		02D9516D2C926A7D007BB2B4 /* Primers */ = {
@@ -2179,6 +2196,7 @@
 				02F99F3E29E4D5750009B3E8 /* dydxTransferSearchItemView.swift in Sources */,
 				27EB25832C6D1E5E008C187B /* dydxVaultPositionView.swift in Sources */,
 				27DBF3C92C4A05B9009EB2D6 /* dydxTitledNumberField.swift in Sources */,
+				02D6DBB62D134BCF008AAEA1 /* dydxSimpleUIMarketListView.swift in Sources */,
 				0284201629AD71B600C0E7CC /* Enums.swift in Sources */,
 				02678FA629666BE600EE346B /* dydxPortfolioOrdersView.swift in Sources */,
 				273C2F382C496F4F00F8391F /* dydxSliderInputView.swift in Sources */,
@@ -2242,6 +2260,7 @@
 				2728CE1B2BBCD2AB004C9323 /* dydxGainLossInputViewModel.swift in Sources */,
 				02AEE36C28EF7CC8006842E8 /* dydxMarketInfoHeaderView.swift in Sources */,
 				024F488529657F1900E40247 /* dydxPortfolioView.swift in Sources */,
+				028CF1342D1489DD00476930 /* dydxSimpleUIMarketSearchView.swift in Sources */,
 				277E907D2B211553005CCBCB /* dydxRewardsHistoryView.swift in Sources */,
 				024B79BF28B7F53800F7C386 /* dydxViews.docc in Sources */,
 				27BAAF112BD851B500F650C3 /* dydxTakeProfitStopLossStatusViewModel.swift in Sources */,
@@ -2283,6 +2302,7 @@
 				0230A2A328B84A160036DDF3 /* HostingViewController.swift in Sources */,
 				025BA65A290100CD00CDAE99 /* LeverageRisk.swift in Sources */,
 				024F487A29657D7900E40247 /* dydxUserFavoriteView.swift in Sources */,
+				02D6DBB42D134723008AAEA1 /* dydxSimpleUIMarketView.swift in Sources */,
 				02B27A3A2AE8BC5A00A995EC /* dydxHelpView.swift in Sources */,
 				27673BB02C8F971900689E3F /* dydxCheckboxView.swift in Sources */,
 				02678FAA29666C0E00EE346B /* dydxPortfolioFundingView.swift in Sources */,

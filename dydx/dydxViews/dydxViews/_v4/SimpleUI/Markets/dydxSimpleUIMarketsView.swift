@@ -12,6 +12,9 @@ import Utilities
 
 public class dydxSimpleUIMarketsViewModel: PlatformViewModel {
     @Published public var onSettingTapped: (() -> Void)?
+    @Published public var marketList: dydxSimpleUIMarketListViewModel?
+    @Published public var marketSearch: dydxSimpleUIMarketSearchViewModel?
+    @Published public var keyboardUp: Bool = false
 
     public init() { }
 
@@ -38,14 +41,31 @@ public class dydxSimpleUIMarketsViewModel: PlatformViewModel {
                 }
                 .padding(.horizontal)
 
-                Spacer()
+                ZStack(alignment: .bottom) {
+                    ScrollView(.vertical, showsIndicators: false) {
+                        LazyVStack(pinnedViews: [.sectionHeaders]) {
+                            if self.keyboardUp == false {
+                                Section {
+                                    Spacer()
+                                        .frame(height: 320)
+                                }
+                            }
+
+                            Section {
+                                self.marketList?.createView(parentStyle: style)
+                            }
+                        }
+                        .keyboardObserving()
+                    }
+                   // .padding(.bottom, 50) // Button height + additional spacing
+
+                    self.marketSearch?.createView(parentStyle: style)
+                }
             }
                 .frame(maxWidth: .infinity)
-                .themeColor(background: .layer2)
+                .themeColor(background: .transparent)
 
-            return AnyView(
-                view
-            )
+            return AnyView(view)
         }
     }
 }
