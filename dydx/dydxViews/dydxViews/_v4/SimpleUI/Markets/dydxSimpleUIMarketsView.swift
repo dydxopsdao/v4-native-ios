@@ -21,6 +21,9 @@ public class dydxSimpleUIMarketsViewModel: PlatformViewModel {
 
     public static var previewValue: dydxSimpleUIMarketsViewModel {
         let vm = dydxSimpleUIMarketsViewModel()
+        vm.marketList = .previewValue
+        vm.marketSearch = .previewValue
+        vm.portfolio = .previewValue
         return vm
     }
 
@@ -66,7 +69,7 @@ public class dydxSimpleUIMarketsViewModel: PlatformViewModel {
                 }
             }
                 .frame(maxWidth: .infinity)
-                .themeColor(background: .transparent)
+                .themeColor(background: .layer2)
 
             return AnyView(view)
         }
