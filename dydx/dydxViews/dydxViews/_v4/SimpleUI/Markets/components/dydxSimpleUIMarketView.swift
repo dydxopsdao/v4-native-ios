@@ -9,6 +9,7 @@
 import SwiftUI
 import PlatformUI
 import Utilities
+import dydxFormatter
 
 public class dydxSimpleUIMarketViewModel: PlatformViewModel {
     public let marketId: String
@@ -17,7 +18,7 @@ public class dydxSimpleUIMarketViewModel: PlatformViewModel {
     public let price: String?
     public let change: SignedAmountViewModel?
     public let sideText: SideTextViewModel
-    public let leverage: String?
+    public let leverage: Double?
     public let volumn: Double?
     public let onMarketSelected: (() -> Void)?
 
@@ -27,7 +28,7 @@ public class dydxSimpleUIMarketViewModel: PlatformViewModel {
                 price: String?,
                 change: SignedAmountViewModel?,
                 sideText: SideTextViewModel,
-                leverage: String?,
+                leverage: Double?,
                 volumn: Double?,
                 onMarketSelected: (() -> Void)?
     ) {
@@ -49,7 +50,7 @@ public class dydxSimpleUIMarketViewModel: PlatformViewModel {
                                              price: "50_000",
                                              change: .previewValue,
                                              sideText: .previewValue,
-                                             leverage: "1.34",
+                                             leverage: 1.34,
                                              volumn: nil,
                                              onMarketSelected: nil)
         return vm
@@ -83,10 +84,11 @@ public class dydxSimpleUIMarketViewModel: PlatformViewModel {
     }
 
     private func createIcon(style: ThemeStyle) -> some View {
+        let iconSize: CGFloat = 36
         let placeholderText = { [weak self] in
             if let assetName = self?.assetName {
                 return Text(assetName.prefix(1))
-                    .frame(width: 32, height: 32)
+                    .frame(width: iconSize, height: iconSize)
                     .themeColor(foreground: .textTertiary)
                     .themeColor(background: .layer5)
                     .borderAndClip(style: .circle, borderColor: .layer7, lineWidth: 1)
@@ -97,7 +99,7 @@ public class dydxSimpleUIMarketViewModel: PlatformViewModel {
         let iconType = PlatformIconViewModel.IconType.url(url: URL(string: iconUrl ?? ""), placeholderContent: placeholderText)
         return PlatformIconViewModel(type: iconType,
                                      clip: .circle(background: .transparent, spacing: 0),
-                                     size: CGSize(width: 32, height: 32))
+                                     size: CGSize(width: iconSize, height: iconSize))
             .createView(parentStyle: style)
     }
 
@@ -109,8 +111,8 @@ public class dydxSimpleUIMarketViewModel: PlatformViewModel {
 
             HStack {
                 sideText.createView(parentStyle: style.themeFont(fontSize: .small))
-                if let leverage = leverage {
-                    Text(leverage)
+                if let leverage, leverage != 0, let leverageText = dydxFormatter.shared.raw(number: leverage, digits: 3) {
+                    Text(leverageText)
                         .themeColor(foreground: .textSecondary)
                         .themeFont(fontSize: .small)
                 }
