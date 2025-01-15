@@ -12,16 +12,19 @@ import Utilities
 
 public class dydxSimpleUIMarketsViewModel: PlatformViewModel {
     @Published public var marketList: dydxSimpleUIMarketListViewModel?
+    @Published public var positionList: dydxSimpleUIPositionListViewModel?
     @Published public var marketSearch: dydxSimpleUIMarketSearchViewModel?
     @Published public var keyboardUp: Bool = false
     @Published public var portfolio: dydxSimpleUIPortfolioViewModel?
     @Published public var header: dydxSimpleUIMarketsHeaderViewModel?
+    @Published public var hasPosition: Bool = false
 
     public init() { }
 
     public static var previewValue: dydxSimpleUIMarketsViewModel {
         let vm = dydxSimpleUIMarketsViewModel()
         vm.marketList = .previewValue
+        vm.positionList = .previewValue
         vm.marketSearch = .previewValue
         vm.portfolio = .previewValue
         vm.header = .previewValue
@@ -35,31 +38,42 @@ public class dydxSimpleUIMarketsViewModel: PlatformViewModel {
             let bottomPadding = max((self.safeAreaInsets?.bottom ?? 0), 16)
 
             let view = VStack(spacing: 8) {
-                self.header?.createView(parentStyle: style)
-                    .padding(.top, 16)
-                    .padding(.horizontal, 16)
-
                 ZStack(alignment: .bottom) {
                     ScrollView(.vertical, showsIndicators: false) {
                         LazyVStack(pinnedViews: [.sectionHeaders]) {
                             if self.keyboardUp == false {
                                 Section {
-                                    self.portfolio?.createView(parentStyle: style)
-                                        .frame(height: 240)
-                                        .padding(.bottom, 24)
+                                    ZStack(alignment: .top) {
+                                        self.header?.createView(parentStyle: style)
+                                            .padding(.top, 16)
+                                            .padding(.horizontal, 16)
+
+                                        self.portfolio?.createView(parentStyle: style)
+                                            .frame(height: 240)
+                                            .padding(.bottom, 8)
+                                    }
                                 }
                             }
 
                             DividerModel().createView(parentStyle: style)
 
-                            Section {
+                            if self.hasPosition {
+                                let header = self.createHeader(text: DataLocalizer.localize(path: "APP.GENERAL.YOUR_POSITIONS"))
+                                Section(header: header) {
+                                    self.positionList?.createView(parentStyle: style)
+                                }
+                            }
+
+                            let marketHeader = self.createHeader(text: DataLocalizer.localize(path: "APP.GENERAL.MARKETS"))
+                            Section(header: marketHeader) {
                                 self.marketList?.createView(parentStyle: style)
                             }
                         }
                         .keyboardObserving()
                     }
+                    .clipped()      // prevent blending into status bar
 
-                    let blendedColor = Color(UIColor.blend(color1: ThemeColor.SemanticColor.layer2.uiColor,
+                    let blendedColor = Color(UIColor.blend(color1: UIColor.clear,
                                                            intensity1: 0.05,
                                                            color2: UIColor.clear,
                                                            intensity2: 0.95))
@@ -81,6 +95,18 @@ public class dydxSimpleUIMarketsViewModel: PlatformViewModel {
 
             return AnyView(view.ignoresSafeArea(edges: [.bottom]))
         }
+    }
+
+    private func createHeader(text: String) -> some View {
+        VStack(spacing: 0) {
+            Text(text)
+                .themeFont(fontType: .plus)
+                .themeColor(foreground: .textPrimary)
+                .leftAligned()
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+        }
+        .themeColor(background: .layer2)
     }
 }
 

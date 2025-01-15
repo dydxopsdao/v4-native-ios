@@ -40,13 +40,15 @@ class dydxSimpleUIPortfolioViewPresenter: HostedViewPresenter<dydxSimpleUIPortfo
 
         self.viewModel = viewModel
 
+        updateChartResolutions()
+
         attachChildren(workers: childPresenters)
     }
 
     override func start() {
         super.start()
 
-        AbacusStateManager.shared.setHistoricalPNLPeriod(period: HistoricalPnlPeriod.period30d)
+        AbacusStateManager.shared.setHistoricalPNLPeriod(period: HistoricalPnlPeriod.period7d)
 
         loadingStartTime = Date()
         Publishers.CombineLatest4(
@@ -82,14 +84,20 @@ class dydxSimpleUIPortfolioViewPresenter: HostedViewPresenter<dydxSimpleUIPortfo
     }
 
     private func updatePNLs(pnls: [SubaccountHistoricalPNL], subaccount: Subaccount) {
-        let firstTotalPnl = pnls.first?.totalPnl
-        let targetTotalPnl = subaccount.pnlTotal?.doubleValue ?? pnls.last?.totalPnl
+        let firstEquity = pnls.first?.equity
+        let targetEquity = subaccount.equity?.current?.doubleValue ?? pnls.last?.equity
         let beginning = pnls.first?.equity
 
-        if let firstTotalPnl = firstTotalPnl, let targetTotalPnl = targetTotalPnl, let beginning = beginning, beginning != 0 {
-            viewModel?.pnlAmount = dydxFormatter.shared.dollar(number: targetTotalPnl - firstTotalPnl, digits: 2)
-            let percent = dydxFormatter.shared.percent(number: abs(targetTotalPnl - firstTotalPnl) / beginning, digits: 2)
-            viewModel?.pnlPercent = SignedAmountViewModel(text: percent, sign: targetTotalPnl >= firstTotalPnl ? .plus : .minus, coloringOption: .textOnly)
+        if let firstEquity = firstEquity, let targetEquity = targetEquity, let beginning = beginning, beginning != 0 {
+            let amount =  dydxFormatter.shared.dollar(number: targetEquity - firstEquity, digits: 2)
+            viewModel?.pnlAmount = SignedAmountViewModel(text: amount, sign: targetEquity >= firstEquity ? .plus : .minus, coloringOption: .textOnly)
+
+            let percent = dydxFormatter.shared.percent(number: abs(targetEquity - firstEquity) / beginning, digits: 2)
+            if let percent {
+                viewModel?.pnlPercent = SignedAmountViewModel(text: "(" + percent + ")", sign: targetEquity >= firstEquity ? .plus : .minus, coloringOption: .textOnly)
+            } else {
+                viewModel?.pnlAmount = nil
+            }
         }
 
         var chartEntries = pnls.compactMap {
@@ -111,5 +119,15 @@ class dydxSimpleUIPortfolioViewPresenter: HostedViewPresenter<dydxSimpleUIPortfo
 
         viewModel?.chart.showYLabels = false
         viewModel?.chart.valueLowerBoundOffset = (maxValue - minValue) * 0.8
+    }
+
+    private func updateChartResolutions() {
+        viewModel?.periodOption.items =  PortfolioChartResolution.allResolutions.map {
+            dydxSimpleUIPortfolioPeriodViewModel.OptionItem(text: $0.text, value: $0.key.rawValue)
+        }
+        viewModel?.periodOption.selectedIndex = 1
+        viewModel?.periodOption.selectAction = { index in
+            AbacusStateManager.shared.setHistoricalPNLPeriod(period: PortfolioChartResolution.allResolutions[index].key)
+        }
     }
 }

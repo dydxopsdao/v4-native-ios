@@ -22,8 +22,17 @@ public class dydxSimpleUIPortfolioViewModel: PlatformViewModel {
             switch self {
             case .hasBalance: return DataLocalizer.localize(path: "APP.GENERAL.DEPOSIT_FUNDS")
             case .walletConnected: return DataLocalizer.localize(path: "APP.GENERAL.DEPOSIT_FUNDS")
-            case .loggedOut: return DataLocalizer.localize(path: "APP.GENERAL.CONNECT_WALLET")
+            case .loggedOut: return DataLocalizer.localize(path: "APP.ONBOARDING.GET_STARTED")
             case .unknown: return ""
+            }
+        }
+
+        var buttonIcon: String? {
+            switch self {
+            case .hasBalance: return nil
+            case .walletConnected: return nil
+            case .loggedOut: return "icon_wallet_connect"
+            case .unknown: return nil
             }
         }
     }
@@ -31,9 +40,11 @@ public class dydxSimpleUIPortfolioViewModel: PlatformViewModel {
     @Published public var buttonAction: (() -> Void)?
     @Published public var state: LoginState  = .unknown
     @Published public var sharedAccountViewModel: SharedAccountViewModel? = SharedAccountViewModel()
-    @Published public var pnlAmount: String?
+    @Published public var pnlAmount: SignedAmountViewModel?
     @Published public var pnlPercent: SignedAmountViewModel?
     @Published public var chart = dydxLineChartViewModel()
+
+    @Published public var periodOption = dydxSimpleUIPortfolioPeriodViewModel.previewValue
 
     private var pnlColor: ThemeColor.SemanticColor {
         get {
@@ -48,7 +59,7 @@ public class dydxSimpleUIPortfolioViewModel: PlatformViewModel {
     public static var previewValue: dydxSimpleUIPortfolioViewModel {
         let vm = dydxSimpleUIPortfolioViewModel()
         vm.sharedAccountViewModel = SharedAccountViewModel.previewValue
-        vm.pnlAmount = "$100,000"
+        vm.pnlAmount = .previewValue
         vm.pnlPercent = .previewValue
         vm.state = .hasBalance
         vm.sharedAccountViewModel = .previewValue
@@ -78,36 +89,34 @@ public class dydxSimpleUIPortfolioViewModel: PlatformViewModel {
     private func createPortfolioView(style: ThemeStyle) -> some View {
         ZStack {
             chart.createView(parentStyle: style)
+                .opacity(0.6)
+                .padding(.top, 78)
 
             VStack(spacing: 16) {
-                Spacer()
-
-                HStack(alignment: .center, spacing: 16) {
+                VStack(alignment: .leading, spacing: 0) {
                     Text(sharedAccountViewModel?.equity ?? "-")
-                        .themeFont(fontType: .plus, fontSize: .custom(size: 42))
+                        .themeFont(fontType: .plus, fontSize: .custom(size: 32))
                         .themeColor(foreground: .textPrimary)
 
-                    Spacer()
-
-                    VStack(alignment: .trailing, spacing: 8) {
-                        Text(pnlAmount ?? "-")
-                            .themeColor(foreground: .textTertiary)
+                    HStack(alignment: .center, spacing: 8) {
+                        pnlAmount?
+                            .createView(parentStyle: style.themeFont(fontSize: .small))
 
                         pnlPercent?
                             .createView(parentStyle: style.themeFont(fontSize: .small))
-                            .padding(.vertical, 3)
-                            .padding(.horizontal, 8)
-                            .background(pnlColor.color.opacity(0.1))
-                            .cornerRadius(7)
 
+                        periodOption.createView(parentStyle: style)
                     }
                     .themeFont(fontSize: .small)
                 }
-                .frame(height: 48)
                 .padding(.horizontal, 16)
+                .padding(.vertical, 16)
+                .leftAligned()
+
+                Spacer()
 
                 HStack(alignment: .center, spacing: 16) {
-                    HStack(alignment: .center, spacing: 16) {
+                    HStack(alignment: .center, spacing: 8) {
                         Text(DataLocalizer.localize(path: "APP.GENERAL.BUYING_POWER"))
                             .themeColor(foreground: .textTertiary)
                         Text(sharedAccountViewModel?.buyingPower ?? "-")
@@ -116,19 +125,18 @@ public class dydxSimpleUIPortfolioViewModel: PlatformViewModel {
                     .themeFont(fontSize: .small)
 
                     Spacer()
-                    DividerModel().createView(parentStyle: style)
-                    Spacer()
 
                     HStack(alignment: .center, spacing: 8) {
-                        Text(DataLocalizer.localize(path: "APP.TRADE.RISK"))
-                            .themeColor(foreground: .textTertiary)
-                            .themeFont(fontSize: .small)
 
                         if let leverageIcon = sharedAccountViewModel?.leverageIcon {
-                            let leverageIcon = LeverageRiskModel(level: leverageIcon.level,
+                            let leverageText = LeverageRiskModel(marginUsage: leverageIcon.marginUsage,
                                                                  viewSize: leverageIcon.viewSize,
-                                                                 displayOption: .iconAndText)
-                            leverageIcon.createView(parentStyle: style)
+                                                                 displayOption: .fullText)
+                            leverageText.createView(parentStyle: style.themeColor(foreground: .textTertiary))
+                            let leveragePercent = LeverageRiskModel(marginUsage: leverageIcon.marginUsage,
+                                                                    viewSize: leverageIcon.viewSize,
+                                                                    displayOption: .percent)
+                            leveragePercent.createView(parentStyle: style.themeColor(foreground: .textTertiary))
                         }
                     }
                 }
@@ -140,33 +148,50 @@ public class dydxSimpleUIPortfolioViewModel: PlatformViewModel {
 
     private func createLoggedOutView(style: ThemeStyle) -> some View {
         VStack(spacing: 16) {
-
-            Spacer()
-
-            HStack {
+            VStack(alignment: .leading, spacing: 0) {
                 Text(dydxFormatter.shared.dollar(number: 0.0, digits: 2) ?? "")
-                    .themeFont(fontType: .plus, fontSize: .largest)
+                    .themeFont(fontType: .plus, fontSize: .custom(size: 32))
                     .themeColor(foreground: .textPrimary)
-
-                Spacer()
 
                 let percent = dydxFormatter.shared.percent(number: 0.0, digits: 2)
                 ColoredTextModel(text: percent, color: ThemeSettings.positiveColor)
-                    .createView(parentStyle: style)
+                    .createView(parentStyle: style.themeFont(fontSize: .small))
             }
-            .frame(height: 80)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 16)
+            .leftAligned()
+
+            Spacer()
 
             Text(DataLocalizer.localize(path: "APP.GENERAL.NO_FUNDS"))
                 .themeFont(fontSize: .small)
                 .themeColor(foreground: .textTertiary)
 
-            let buttonLabel = Text(
-                self.state.buttonText
-            ).themeFont(fontType: .base, fontSize: .medium)
-            PlatformButtonViewModel(content: buttonLabel.wrappedViewModel) { [weak self] in
+            let buttonLabel = HStack {
+                Text(
+                    self.state.buttonText
+                )
+                .themeFont(fontType: .base, fontSize: .medium)
+
+                if let iconName = self.state.buttonIcon {
+                    PlatformIconViewModel(type: .asset(name: iconName, bundle: .dydxView),
+                                          size: CGSize(width: 20, height: 20),
+                                          templateColor: .textPrimary)
+                        .createView(parentStyle: style)
+                }
+            }
+
+            PlatformButtonViewModel(content: buttonLabel.wrappedViewModel,
+                                    type: .defaultType(pilledCorner: true)) { [weak self] in
                 self?.buttonAction?()
             }
             .createView(parentStyle: style)
+        }
+        .background {
+            Image(themedImageBaseName: "texture", bundle: .dydxView)
+                .resizable()
+                .scaledToFill()
+                .opacity(0.2)
         }
         .padding(.horizontal, 16)
     }

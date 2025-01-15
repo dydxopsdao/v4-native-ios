@@ -24,9 +24,9 @@ public class dydxSimpleUIMarketListViewModel: PlatformViewModel {
         return vm
     }
 
-    private let dummyNoMarket = dydxSimpleUIMarketViewModel(marketId: "_dummy_no_market", assetName: "", iconUrl: nil, price: nil, change: nil, sideText: SideTextViewModel.previewValue, leverage: nil, volumn: nil, onMarketSelected: nil)
+    private let dummyNoMarket = dydxSimpleUIMarketViewModel(marketId: "_dummy_no_market", assetName: "", iconUrl: nil, price: nil, change: nil, sideText: SideTextViewModel.previewValue, leverage: nil, volumn: nil, positionTotal: nil, positionSize: nil, onMarketSelected: nil)
 
-    private let dummyLoading = dydxSimpleUIMarketViewModel(marketId: "_dummy_loading", assetName: "", iconUrl: nil, price: nil, change: nil, sideText: SideTextViewModel.previewValue, leverage: nil, volumn: nil, onMarketSelected: nil)
+    private let dummyLoading = dydxSimpleUIMarketViewModel(marketId: "_dummy_loading", assetName: "", iconUrl: nil, price: nil, change: nil, sideText: SideTextViewModel.previewValue, leverage: nil, volumn: nil, positionTotal: nil, positionSize: nil, onMarketSelected: nil)
 
     public override func createView(parentStyle: ThemeStyle = ThemeStyle.defaultStyle, styleKey: String? = nil) -> PlatformView {
         PlatformView(viewModel: self, parentStyle: parentStyle, styleKey: styleKey) { [weak self] style  in
@@ -53,17 +53,26 @@ public class dydxSimpleUIMarketListViewModel: PlatformViewModel {
                     }
                 } else if market.marketId == "_dummy_no_market" {
                     PlaceholderViewModel(text: DataLocalizer.localize(path: "APP.GENERAL.NO_MARKET"))
-                                          .createView(parentStyle: style)
+                        .createView(parentStyle: style)
                 } else {
                     market.createView(parentStyle: style)
-                }
-                if market !== markets.last {
-                    DividerModel().createView(parentStyle: style)
                 }
             }
 
             return AnyView(view)
         }
+    }
+
+    private func createHeader(text: String) -> some View {
+        VStack(spacing: 0) {
+            Text(text)
+                .themeFont(fontType: .plus)
+                .themeColor(foreground: .textPrimary)
+                .leftAligned()
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+        }
+        .themeColor(background: .layer2)
     }
 }
 
