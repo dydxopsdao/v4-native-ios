@@ -13,10 +13,9 @@ import Utilities
 public class dydxSimpleUIMarketInfoViewModel: PlatformViewModel {
     @Published public var header: dydxSimpleUIMarketInfoHeaderViewModel?
     @Published public var chart: dydxSimpleUIMarketCandlesViewModel?
-    @Published public var stats: dydxMarketStatsViewModel? = dydxMarketStatsViewModel()
-    @Published public var resources: dydxMarketResourcesViewModel = dydxMarketResourcesViewModel()
-    @Published public var configs: dydxMarketConfigsViewModel? = dydxMarketConfigsViewModel()
     @Published public var position: dydxSimpleUIMarketPositionViewModel?
+    @Published public var details: dydxSimpleUIMarketDetailsViewModel?
+    @Published public var buySell: dydxSimpleUIMarketBuySellViewModel?
 
     public init() { }
 
@@ -25,9 +24,8 @@ public class dydxSimpleUIMarketInfoViewModel: PlatformViewModel {
         vm.header = .previewValue
         vm.chart = .previewValue
         vm.position = .previewValue
-        vm.stats = .previewValue
-        vm.resources = .previewValue
-        vm.configs = .previewValue
+        vm.details = .previewValue
+        vm.buySell = .previewValue
         return vm
     }
 
@@ -35,29 +33,32 @@ public class dydxSimpleUIMarketInfoViewModel: PlatformViewModel {
         PlatformView(viewModel: self, parentStyle: parentStyle, styleKey: styleKey) { [weak self] style in
             guard let self = self else { return AnyView(PlatformView.nilView) }
 
-            let view = VStack {
-                self.header?.createView(parentStyle: style)
+            let bottomPadding = max((self.safeAreaInsets?.bottom ?? 0), 16)
 
-                ScrollView(showsIndicators: false) {
-                    LazyVStack(pinnedViews: [.sectionHeaders]) {
-                        self.chart?.createView(parentStyle: style)
-                            .padding(.bottom, 18)
+            let view = ZStack(alignment: .bottom) {
+                VStack {
+                    self.header?.createView(parentStyle: style)
 
-                        self.position?.createView(parentStyle: style)
+                    ScrollView(showsIndicators: false) {
+                        LazyVStack(pinnedViews: [.sectionHeaders]) {
+                            self.chart?.createView(parentStyle: style)
+                                .padding(.bottom, 18)
 
-                        self.stats?.createView(parentStyle: style)
-                            .sectionHeader(path: "APP.GENERAL.STATISTICS")
+                            self.position?.createView(parentStyle: style)
 
-                        self.resources.createView(parentStyle: style)
-                            .sectionHeader(path: "APP.GENERAL.DETAILS")
+                            self.details?.createView(parentStyle: style)
 
-                        self.configs?.createView(parentStyle: style)
-
-                        // for tab bar scroll adjstment overlap
-                        Spacer(minLength: 128)
+                            // for tab bar scroll adjstment overlap
+                            Spacer(minLength: 128)
+                        }
                     }
-                    .themeColor(background: .layer2)
                 }
+
+                self.buySell?.createView(parentStyle: style)
+                    .padding(.top, 16)
+                    .padding(.bottom, bottomPadding)
+                    .themeColor(background: .layer2)
+                  //  .background(SearchBoxModel.bottomBlendGradiant)
             }
                 .frame(maxWidth: .infinity)
                 .themeColor(background: .layer2)
