@@ -11,25 +11,12 @@ import PlatformUI
 import Utilities
 
 public class dydxSimpleUITradeInputViewModel: PlatformViewModel {
-    public enum DisplayState {
-        case tip, full
-    }
+    @Published public var header: dydxSimpleUITradeInputHeaderViewModel?
 
-    public enum TipState {
-        case buySell, draft
-    }
-
-    @Published public var displayState: DisplayState = .tip
-    @Published public var tipState: TipState = .buySell
-
-    @Published public var tipBuySellViewModel: dydxTradeSheetTipBuySellViewModel? = dydxTradeSheetTipBuySellViewModel()
-    @Published public var tipDraftViewModel: dydxTradeSheetTipDraftViewModel? = dydxTradeSheetTipDraftViewModel()
-
-    @Published public var sideViewModel: dydxTradeInputSideViewModel? = dydxTradeInputSideViewModel()
-    @Published public var ctaButtonViewModel: dydxTradeInputCtaButtonViewModel? = dydxTradeInputCtaButtonViewModel()
+    @Published public var ctaButtonViewModel: dydxSimpleUITradeInputCtaButtonView? = dydxSimpleUITradeInputCtaButtonView()
     @Published public var sizeViewModel: dydxSimpleUITradeInputSizeViewModel? = dydxSimpleUITradeInputSizeViewModel()
 
-    @Published public var buyingPowerViewModel = dydxReceiptBuyingPowerViewModel()
+    @Published public var buyingPowerViewModel: dydxSimpleUIBuyingPowerViewModel? =  dydxSimpleUIBuyingPowerViewModel()
     @Published public var validationErrorViewModel: ValidationErrorViewModel? = ValidationErrorViewModel()
 
     @Published public var onScrollViewCreated: ((UIScrollView) -> Void)?
@@ -38,13 +25,10 @@ public class dydxSimpleUITradeInputViewModel: PlatformViewModel {
 
     public static var previewValue: dydxSimpleUITradeInputViewModel {
         let vm = dydxSimpleUITradeInputViewModel()
-        vm.tipBuySellViewModel = .previewValue
-        vm.tipDraftViewModel = .previewValue
-        vm.sideViewModel = .previewValue
+        vm.header = .previewValue
         vm.ctaButtonViewModel = .previewValue
         vm.sizeViewModel = .previewValue
         vm.buyingPowerViewModel = .previewValue
-        vm.displayState = .full
         vm.validationErrorViewModel = .previewValue
        return vm
     }
@@ -56,68 +40,47 @@ public class dydxSimpleUITradeInputViewModel: PlatformViewModel {
             let bottomPadding = max((self.safeAreaInsets?.bottom ?? 0), 16)
 
             let view =
-                VStack(spacing: 16) {
-                    if case(.tip) = self.displayState {
-                        self.createSwipeUpView(parentStyle: style)
-                        Spacer()
-                    } else {
+            VStack(spacing: 16) {
+                self.header?.createView(parentStyle: style)
+
+                VStack {
+                    ScrollView(showsIndicators: false) {
                         VStack {
-                            ScrollView(showsIndicators: false) {
-                                VStack {
-                                    self.sideViewModel?
-                                        .createView(parentStyle: parentStyle)
-                                        .padding([.top], 34)
-                                        .padding([.bottom], 36)
 
-                                    self.sizeViewModel?
-                                        .createView(parentStyle: parentStyle)
-
-                                    self.validationErrorViewModel?
-                                        .createView(parentStyle: parentStyle)
-                                }
-                                .introspectScrollView { [weak self] scrollView in
-                                    self?.onScrollViewCreated?(scrollView)
-                                }
-                            }
-
-                            Spacer()
-
-                            VStack {
-                                self.buyingPowerViewModel.createView(parentStyle: style)
+                            VStack(spacing: 16) {
+                                self.buyingPowerViewModel?.createView(parentStyle: style)
                                     .padding(.horizontal, 8)
 
-                                self.ctaButtonViewModel?.createView(parentStyle: style)
+                                self.sizeViewModel?
+                                    .createView(parentStyle: parentStyle)
                             }
-                            .keyboardObserving(offset: -bottomPadding + 16, mode: .yOffset)
+                            .padding(.top, 34)
+
+                            self.validationErrorViewModel?
+                                .createView(parentStyle: parentStyle)
+                        }
+                        .introspectScrollView { [weak self] scrollView in
+                            self?.onScrollViewCreated?(scrollView)
                         }
                     }
+
+                    Spacer()
+
+                    VStack {
+                        self.ctaButtonViewModel?.createView(parentStyle: style)
+                    }
+                    .keyboardObserving(offset: -bottomPadding + 16, mode: .yOffset)
                 }
+            }
                 .padding(.horizontal, 16)
+                .padding(.top, 32)
                 .padding(.bottom, bottomPadding)
-                .themeColor(background: .layer3)
+                .themeColor(background: .layer2)
                // .keyboardAccessory(background: .layer3, parentStyle: parentStyle)
                 .makeSheet()
 
             // make it visible under the tabbar
             return AnyView(view.ignoresSafeArea(edges: [.bottom]))
-        }
-    }
-
-    private func createSwipeUpView(parentStyle: ThemeStyle) -> some View {
-        Group {
-            switch tipState {
-            case .buySell:
-                tipBuySellViewModel?
-                    .createView(parentStyle: parentStyle)
-                    .padding([.top], 34)
-                    .padding([.bottom], 10)
-            case .draft:
-                tipDraftViewModel?
-                    .createView(parentStyle: parentStyle)
-                    .padding([.top], 34)
-                    .padding([.bottom], 10)
-                    .padding([.leading, .trailing])
-            }
         }
     }
 }

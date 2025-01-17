@@ -13,6 +13,8 @@ import Utilities
 public class dydxSimpleUITradeInputSizeViewModel: PlatformViewModel {
     @Published public var sizeItem: dydxSimpleUITradeInputSizeItemViewModel?
     @Published public var usdSizeItem: dydxSimpleUITradeInputSizeItemViewModel?
+    @Published public var secondaryText: String?
+    @Published public var secondaryToken: String?
 
     public enum FocusState {
         case atUsdcSize, atSize, none
@@ -57,7 +59,7 @@ public class dydxSimpleUITradeInputSizeViewModel: PlatformViewModel {
         PlatformView(viewModel: self, parentStyle: parentStyle, styleKey: styleKey) { [weak self] style in
             guard let self = self else { return AnyView(PlatformView.nilView) }
 
-            let view = HStack(alignment: .center) {
+            let view = VStack(alignment: .center) {
                 let animationBoxHeight = dydxSimpleUITradeInputSizeItemViewModel.viewHeight
                 ZStack(alignment: .leading) {
                     let offset = self.focusState == .atUsdcSize ? 0.0 : -animationBoxHeight
@@ -71,27 +73,47 @@ public class dydxSimpleUITradeInputSizeViewModel: PlatformViewModel {
                 .clipped()
                 .contentShape(Rectangle())      // needed to clip the tap events
 
-                let content = PlatformIconViewModel(type: .asset(name: "icon_swap_vertical", bundle: .dydxView),
-                                                    clip: .circle(background: .layer4, spacing: 16, borderColor: .textTertiary),
-                                                    templateColor: .textSecondary)
-                PlatformButtonViewModel(content: content,
-                                        type: .iconType) { [weak self] in
-                    withAnimation(Animation.easeInOut) {
-                        switch self?.focusState {
-                            case .atUsdcSize:
-                            self?.focusState = .atSize
-                        case .atSize:
-                            self?.focusState = .atUsdcSize
-                        default:
-                            break
-                        }
-                    }
-                }
-                 .createView(parentStyle: style)
+                self.createSwapView(style: style)
             }
                 .padding(.horizontal, 8)
 
             return AnyView(view)
+        }
+    }
+
+    private func createSwapView(style: ThemeStyle) -> some View {
+        return Group {
+            let content = HStack {
+                if let secondaryText, let secondaryToken {
+                    Text(secondaryText)
+                        .themeFont(fontSize: .small)
+                        .themeColor(foreground: .textTertiary)
+
+                    Text(secondaryToken)
+                        .themeFont(fontSize: .small)
+                }
+
+                PlatformIconViewModel(type: .asset(name: "icon_swap_vertical", bundle: .dydxView),
+                                      clip: .circle(background: .layer3, spacing: 8),
+                                      size: CGSize(width: 24, height: 24),
+                                      templateColor: .textSecondary)
+                .createView(parentStyle: style)
+
+            }.wrappedViewModel
+            PlatformButtonViewModel(content: content,
+                                    type: .iconType) { [weak self] in
+                withAnimation(Animation.easeInOut) {
+                    switch self?.focusState {
+                    case .atUsdcSize:
+                        self?.focusState = .atSize
+                    case .atSize:
+                        self?.focusState = .atUsdcSize
+                    default:
+                        break
+                    }
+                }
+            }
+                                    .createView(parentStyle: style)
         }
     }
 }
