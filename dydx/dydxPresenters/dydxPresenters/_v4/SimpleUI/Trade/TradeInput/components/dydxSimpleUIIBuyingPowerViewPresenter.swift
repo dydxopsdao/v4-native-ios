@@ -32,33 +32,20 @@ class dydxSimpleUIBuyingPowerViewPresenter: HostedViewPresenter<dydxSimpleUIBuyi
         super.start()
 
         Publishers
-            .CombineLatest(
-                AbacusStateManager.shared.state.selectedSubaccountPositions,
-                AbacusStateManager.shared.state.tradeInput)
-            .sink { [weak self] positions, tradeInput in
-                let marketId = tradeInput?.marketId ?? "ETH-USD"
-                if let position = positions.first(where: { $0.id == marketId}) {
-                    self?.updateBuyingPowerChange(buyingPower: position.buyingPower)
+            .CombineLatest3(
+                AbacusStateManager.shared.state.selectedSubaccount,
+                AbacusStateManager.shared.state.tradeInput
+                    .compactMap { $0 }
+                    .removeDuplicates(),
+                AbacusStateManager.shared.state.configsAndAssetMap)
+            .sink { [weak self] selectedSubaccount, tradeInput, configsAndAssetMap in
+                if let marketId = tradeInput.marketId,
+                   let imf = configsAndAssetMap[marketId]?.configs?.initialMarginFraction?.doubleValue, imf > 0,
+                   let freeCollateral = selectedSubaccount?.freeCollateral?.current?.doubleValue {
+                    let buyingPower = freeCollateral * (1.0 / imf)
+                    self?.viewModel?.buyingPower = dydxFormatter.shared.dollar(number: buyingPower.filter(filter: .notNegative), digits: 2)
                 }
             }
             .store(in: &subscriptions)
-    }
-
-    func updateBuyingPowerChange(buyingPower: TradeStatesWithDoubleValues) {
-        let before: AmountTextModel?
-        if let beforeAmount = buyingPower.current {
-            before = AmountTextModel(amount: beforeAmount, tickSize: NSNumber(value: 0), requiresPositive: true)
-        } else {
-            before = nil
-        }
-
-        let after: AmountTextModel?
-        if let afterAmount = buyingPower.postOrder, afterAmount != buyingPower.current {
-            after = AmountTextModel(amount: afterAmount, tickSize: NSNumber(value: 0), requiresPositive: true)
-        } else {
-            after = nil
-        }
-
-        viewModel?.buyingPowerChange = dydxSimpleUIBuyingPowerViewModel.BuyingPowerChange(symbol: "USD", change: .init(before: before, after: after))
     }
 }
