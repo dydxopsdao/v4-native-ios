@@ -22,7 +22,7 @@ public class dydxSimpleUITradeInputViewBuilder: NSObject, ObjectBuilderProtocol 
     public func build<T>() -> T? {
         let presenter = dydxSimpleUITradeInputViewPresenter()
         let view = presenter.viewModel?.createView() ?? PlatformViewModel().createView()
-        let viewController = dydxSimpleUITradeInputViewController(presenter: presenter, view: view, configuration: .default)
+        let viewController = dydxSimpleUITradeInputViewController(presenter: presenter, view: view, configuration: .fullScreenSheet)
         return viewController as? T
     }
 }
@@ -63,12 +63,12 @@ private protocol dydxSimpleUITradeInputViewPresenterProtocol: HostedViewPresente
 }
 
 private class dydxSimpleUITradeInputViewPresenter: HostedViewPresenter<dydxSimpleUITradeInputViewModel>, dydxSimpleUITradeInputViewPresenterProtocol {
-    @Published var side: dydxViews.OrderSide?
+    @Published var side: AppOrderSide?
 
     private let ctaButtonPresenter = dydxSimpleUITradeInputCtaButtonViewPresenter()
     private let sizeViewPresenter = dydxSimpleUITradeInputSizeViewPresenter()
     private let buyingPowerPresenter = dydxSimpleUIBuyingPowerViewPresenter()
-    private let feesPresenter = dydxSimpleUIFeesViewPresenter(feesType: .trade)
+    private let feesPresenter = dydxSimpleUIFeesViewPresenter(tradeType: .trade)
     private let marginUsagePreesnter = dydxSimpleUIMarginUsageViewPresenter()
     private let validationErrorPresenter = dydxSimpleUITradeInputValidationViewPresenter()
     private let headerPresenter = dydxSimpleUITradeInputHeaderViewPresenter()

@@ -44,8 +44,7 @@ public class dydxSimpleUITradeInputViewModel: PlatformViewModel {
 
             let bottomPadding = max((self.safeAreaInsets?.bottom ?? 0), 16)
 
-            let view =
-            VStack(spacing: 16) {
+            let view = VStack(spacing: 16) {
                 self.header?.createView(parentStyle: style)
 
                 VStack {
@@ -71,7 +70,7 @@ public class dydxSimpleUITradeInputViewModel: PlatformViewModel {
 
                     Spacer()
 
-                    VStack {
+                    VStack(spacing: 21) {
                         HStack {
                             self.marginUsageViewModel?.createView(parentStyle: style)
                             Spacer()
@@ -86,8 +85,6 @@ public class dydxSimpleUITradeInputViewModel: PlatformViewModel {
                 .padding(.top, 32)
                 .padding(.bottom, bottomPadding)
                 .themeColor(background: .layer2)
-               // .keyboardAccessory(background: .layer3, parentStyle: parentStyle)
-                .makeSheet()
 
             // make it visible under the tabbar
             return AnyView(view.ignoresSafeArea(edges: [.bottom]))

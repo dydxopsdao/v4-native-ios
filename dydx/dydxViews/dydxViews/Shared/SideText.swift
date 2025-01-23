@@ -62,7 +62,7 @@ public class SideTextViewModel: PlatformViewModel, Hashable {
             }
         }
 
-        public init(positionSide: PositionSide) {
+        public init(positionSide: AppPositionSide) {
             switch positionSide {
             case .LONG:
                 self = .long
@@ -78,10 +78,10 @@ public class SideTextViewModel: PlatformViewModel, Hashable {
         }
     }
 
-    @Published public var side: Side = .custom("Unknown")
+    @Published public var side: Side = .custom("")
     @Published public var coloringOption: ColoringOption = .colored
 
-    public init(side: SideTextViewModel.Side = .custom("Unknown"), coloringOption: SideTextViewModel.ColoringOption = .colored) {
+    public init(side: SideTextViewModel.Side = .custom(""), coloringOption: SideTextViewModel.ColoringOption = .colored) {
         self.side = side
         self.coloringOption = coloringOption
     }
