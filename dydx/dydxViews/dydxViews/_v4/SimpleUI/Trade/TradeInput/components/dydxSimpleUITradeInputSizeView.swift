@@ -12,16 +12,15 @@ import Utilities
 
 public class dydxSimpleUITradeInputSizeViewModel: PlatformViewModel {
     @Published public var sizeItem: dydxSimpleUITradeInputSizeItemViewModel?
-    @Published public var usdSizeItem: dydxSimpleUITradeInputSizeItemViewModel?
+    @Published public var usdcSizeItem: dydxSimpleUITradeInputSizeItemViewModel?
+    @Published public var closePositionSizeItem: dydxSimpleUITradeInputSizeItemViewModel?
     @Published public var secondaryText: String?
     @Published public var secondaryToken: String?
 
-    public enum FocusState {
-        case atUsdcSize, atSize, none
+    @Published public var percent: dydxSimpleUIClosePercentViewModel?
 
-        var isKeyboardUp: Bool {
-            return self == .atUsdcSize || self == .atSize
-        }
+    public enum FocusState {
+        case atUsdcSize, atSize, none, atClosePosition
     }
 
     @Published public var focusState: FocusState = .none {
@@ -31,16 +30,21 @@ public class dydxSimpleUITradeInputSizeViewModel: PlatformViewModel {
                 case .atUsdcSize:
                     sizeItem?.isFocused = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                        self?.usdSizeItem?.isFocused = true
+                        self?.usdcSizeItem?.isFocused = true
                     }
                 case .atSize:
-                    usdSizeItem?.isFocused = false
+                    usdcSizeItem?.isFocused = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
                         self?.sizeItem?.isFocused = true
                     }
                 case .none:
                     sizeItem?.isFocused = false
-                    usdSizeItem?.isFocused = false
+                    usdcSizeItem?.isFocused = false
+                    closePositionSizeItem?.isFocused = false
+                case .atClosePosition:
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                        self?.closePositionSizeItem?.isFocused = true
+                    }
                 }
             }
         }
@@ -49,7 +53,9 @@ public class dydxSimpleUITradeInputSizeViewModel: PlatformViewModel {
     public static var previewValue: dydxSimpleUITradeInputSizeViewModel = {
         let vm = dydxSimpleUITradeInputSizeViewModel()
         vm.sizeItem = .previewValue
-        vm.usdSizeItem = .previewValue
+        vm.usdcSizeItem = .previewValue
+        vm.closePositionSizeItem = .previewValue
+        vm.percent = .previewValue
         return vm
     }()
 
@@ -59,21 +65,28 @@ public class dydxSimpleUITradeInputSizeViewModel: PlatformViewModel {
         PlatformView(viewModel: self, parentStyle: parentStyle, styleKey: styleKey) { [weak self] style in
             guard let self = self else { return AnyView(PlatformView.nilView) }
 
-            let view = VStack(alignment: .center) {
+            let view = VStack(alignment: .center, spacing: 20) {
                 let animationBoxHeight = dydxSimpleUITradeInputSizeItemViewModel.viewHeight
                 ZStack(alignment: .leading) {
-                    let offset = self.focusState == .atUsdcSize ? 0.0 : -animationBoxHeight
-                    VStack(alignment: .leading, spacing: 0) {
-                        self.usdSizeItem?.createView(parentStyle: style)
-                        self.sizeItem?.createView(parentStyle: style)
+                    if self.percent != nil {
+                        self.closePositionSizeItem?.createView(parentStyle: style)
+                    } else {
+                        let offset = self.focusState == .atUsdcSize ? 0.0 : -animationBoxHeight
+                        VStack(alignment: .leading, spacing: 0) {
+                            self.usdcSizeItem?.createView(parentStyle: style)
+                            self.sizeItem?.createView(parentStyle: style)
+                        }
+                        .offset(x: 0, y: offset)
                     }
-                    .offset(x: 0, y: offset)
                 }
                 .frame(height: animationBoxHeight, alignment: .top)
                 .clipped()
                 .contentShape(Rectangle())      // needed to clip the tap events
 
                 self.createSwapView(style: style)
+
+                self.percent?
+                    .createView(parentStyle: parentStyle)
             }
                 .padding(.horizontal, 8)
 
@@ -82,38 +95,47 @@ public class dydxSimpleUITradeInputSizeViewModel: PlatformViewModel {
     }
 
     private func createSwapView(style: ThemeStyle) -> some View {
-        return Group {
-            let content = HStack {
-                if let secondaryText, let secondaryToken {
-                    Text(secondaryText)
-                        .themeFont(fontSize: .small)
-                        .themeColor(foreground: .textTertiary)
+        let textContent = HStack {
+            if let secondaryText, let secondaryToken {
+                Text(secondaryText)
+                    .themeFont(fontSize: .small)
+                    .themeColor(foreground: .textTertiary)
+                    .animation(.default)
 
-                    Text(secondaryToken)
-                        .themeFont(fontSize: .small)
+                Text(secondaryToken)
+                    .themeFont(fontSize: .small)
+                    .animation(.default)
+            }
+        }
+
+        return Group {
+            if percent != nil {
+                textContent
+            } else {
+                let content = HStack {
+                    textContent
+                    PlatformIconViewModel(type: .asset(name: "icon_swap_vertical", bundle: .dydxView),
+                                          clip: .circle(background: .layer3, spacing: 8),
+                                          size: CGSize(width: 24, height: 24),
+                                          templateColor: .textSecondary)
+                    .createView(parentStyle: style)
                 }
 
-                PlatformIconViewModel(type: .asset(name: "icon_swap_vertical", bundle: .dydxView),
-                                      clip: .circle(background: .layer3, spacing: 8),
-                                      size: CGSize(width: 24, height: 24),
-                                      templateColor: .textSecondary)
-                .createView(parentStyle: style)
-
-            }.wrappedViewModel
-            PlatformButtonViewModel(content: content,
-                                    type: .iconType) { [weak self] in
-                withAnimation(Animation.easeInOut) {
-                    switch self?.focusState {
-                    case .atUsdcSize:
-                        self?.focusState = .atSize
-                    case .atSize:
-                        self?.focusState = .atUsdcSize
-                    default:
-                        break
+                PlatformButtonViewModel(content: content.wrappedViewModel,
+                                        type: .iconType) { [weak self] in
+                    withAnimation(Animation.easeInOut) {
+                        switch self?.focusState {
+                        case .atUsdcSize:
+                            self?.focusState = .atSize
+                        case .atSize:
+                            self?.focusState = .atUsdcSize
+                        default:
+                            break
+                        }
                     }
                 }
+                                        .createView(parentStyle: style)
             }
-                                    .createView(parentStyle: style)
         }
     }
 }

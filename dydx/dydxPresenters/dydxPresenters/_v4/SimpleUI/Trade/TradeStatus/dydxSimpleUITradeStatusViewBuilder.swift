@@ -28,7 +28,14 @@ public class dydxSimpleUITradeStatusViewBuilder: NSObject, ObjectBuilderProtocol
 
 private class dydxSimpleUITradeStatusViewController: HostingViewController<PlatformView, dydxSimpleUITradeStatusViewModel> {
     override public func arrive(to request: RoutingRequest?, animated: Bool) -> Bool {
+        guard let presenter = presenter as? dydxSimpleUITradeStatusViewPresenter else {
+            return false
+        }
         if request?.path == "/trade/simple/status" {
+            presenter.tradeType = .trade
+            return true
+        } else if request?.path == "/closePosition/simple/status" {
+            presenter.tradeType = .closePosition
             return true
         }
         return false
@@ -82,7 +89,7 @@ private class dydxSimpleUITradeStatusViewPresenter: HostedViewPresenter<dydxSimp
                         .eraseToAnyPublisher()
                 case .closePosition:
                     AbacusStateManager.shared.state.closePositionInput
-                        .map {  $0.side }
+                        .map {  $0?.side }
                         .eraseToAnyPublisher()
                 }
             }
@@ -99,7 +106,7 @@ private class dydxSimpleUITradeStatusViewPresenter: HostedViewPresenter<dydxSimp
                         .eraseToAnyPublisher()
                 case .closePosition:
                     AbacusStateManager.shared.state.closePositionInput
-                        .map {  $0.marketId }
+                        .map {  $0?.marketId }
                         .eraseToAnyPublisher()
                 }
             }
@@ -116,7 +123,7 @@ private class dydxSimpleUITradeStatusViewPresenter: HostedViewPresenter<dydxSimp
                         .eraseToAnyPublisher()
                 case .closePosition:
                     AbacusStateManager.shared.state.closePositionInput
-                        .map {  $0.summary }
+                        .map {  $0?.summary }
                         .eraseToAnyPublisher()
                 }
             }

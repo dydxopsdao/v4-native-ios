@@ -21,17 +21,27 @@ protocol dydxSimpleUITradeInputSizeViewPresenterProtocol: HostedViewPresenterPro
 }
 
 class dydxSimpleUITradeInputSizeViewPresenter: HostedViewPresenter<dydxSimpleUITradeInputSizeViewModel>, dydxSimpleUITradeInputSizeViewPresenterProtocol {
+    @Published var tradeType: TradeSubmission.TradeType = .trade
 
     private lazy var sizeItem: dydxSimpleUITradeInputSizeItemViewModel = {
         let item = dydxSimpleUITradeInputSizeItemViewModel(label: nil, placeHolder: "0.000", onEdited: { value in
-            AbacusStateManager.shared.trade(input: value?.unlocalizedNumericValue,
-                                            type: TradeInputField.size)
+                AbacusStateManager.shared.trade(input: value?.unlocalizedNumericValue,
+                                                type: TradeInputField.size)
         })
         item.showingUsdc = false
         return item
     }()
 
-    private lazy var usdSizeItem: dydxSimpleUITradeInputSizeItemViewModel = {
+    private lazy var closePositionSizeItem: dydxSimpleUITradeInputSizeItemViewModel = {
+        let item = dydxSimpleUITradeInputSizeItemViewModel(label: nil, placeHolder: "0.000", onEdited: { value in
+            AbacusStateManager.shared.closePosition(input: value?.unlocalizedNumericValue,
+                                                    type: ClosePositionInputField.size)
+        })
+        item.showingUsdc = false
+        return item
+    }()
+
+    private lazy var usdcSizeItem: dydxSimpleUITradeInputSizeItemViewModel = {
         let item = dydxSimpleUITradeInputSizeItemViewModel(label: nil, placeHolder: "0.000", onEdited: { value in
             AbacusStateManager.shared.trade(input: value?.unlocalizedNumericValue,
                                             type: TradeInputField.usdcsize)
@@ -40,12 +50,30 @@ class dydxSimpleUITradeInputSizeViewPresenter: HostedViewPresenter<dydxSimpleUIT
         return item
     }()
 
+    private lazy var percent: dydxSimpleUIClosePercentViewModel = {
+        var options = [InputSelectOption]()
+        // must be 1.0 so that when double value is parsed as string, it matches for 1
+        options.append(InputSelectOption(value: "0.25", string: "25%"))
+        options.append(InputSelectOption(value: "0.50", string: "50%"))
+        options.append(InputSelectOption(value: "0.75", string: "75%"))
+        options.append(InputSelectOption(value: "1.0", string: DataLocalizer.localize(path: "APP.GENERAL.FULL_CLOSE")))
+
+        let item = dydxSimpleUIClosePercentViewModel()
+        item.options = options
+        item.onEdited = { value in
+            PlatformView.hideKeyboard()
+            AbacusStateManager.shared.closePosition(input: value, type: ClosePositionInputField.percent)
+        }
+        return item
+    }()
+
     override init() {
         super.init()
 
         viewModel = dydxSimpleUITradeInputSizeViewModel()
         viewModel?.sizeItem = sizeItem
-        viewModel?.usdSizeItem = usdSizeItem
+        viewModel?.usdcSizeItem = usdcSizeItem
+        viewModel?.closePositionSizeItem = closePositionSizeItem
         viewModel?.focusState = .none
     }
 
@@ -58,27 +86,64 @@ class dydxSimpleUITradeInputSizeViewPresenter: HostedViewPresenter<dydxSimpleUIT
 
         guard let viewModel else { return }
 
+        let inputsPublisher = Publishers
+            .CombineLatest3(
+                $tradeType,
+                AbacusStateManager.shared.state.tradeInput,
+                AbacusStateManager.shared.state.closePositionInput
+            )
+            .map { ($0, $1, $2) }
+            .eraseToAnyPublisher()
+
         Publishers
             .CombineLatest3(
-                AbacusStateManager.shared.state.tradeInput
-                    .compactMap { $0 }
-                    .removeDuplicates(),
+                inputsPublisher,
                 AbacusStateManager.shared.state.configsAndAssetMap,
                 viewModel.$focusState)
-            .sink { [weak self] tradeInput, configsAndAssetMap, focusState in
-                if let marketId = tradeInput.marketId {
-                    self?.update(tradeInput: tradeInput,
-                                 configsAndAsset: configsAndAssetMap[marketId],
-                                 focusState: focusState)
+            .sink { [weak self] inputs, configsAndAssetMap, focusState in
+                guard let self else { return }
+                let (tradeType, tradeInput, closePositionInput) = inputs
+
+                let marketId: String?
+                let size: Double?
+                let usdcSize: Double?
+
+                switch tradeType {
+                case .trade:
+                    marketId = tradeInput?.marketId
+                    size = tradeInput?.size?.size?.doubleValue
+                    usdcSize = tradeInput?.size?.usdcSize?.doubleValue
                     if focusState == dydxSimpleUITradeInputSizeViewModel.FocusState.none {
-                        self?.updateFocusState(.atUsdcSize)
+                        self.updateFocusState(.atUsdcSize)
                     }
+                    self.viewModel?.percent = nil
+                case .closePosition:
+                    marketId = closePositionInput?.marketId
+                    size = closePositionInput?.size?.size?.doubleValue
+                    usdcSize = closePositionInput?.size?.usdcSize?.doubleValue
+                    if parser.asNumber(self.percent.value)?.doubleValue != closePositionInput?.size?.percent?.doubleValue {
+                        self.percent.value = parser.asString(closePositionInput?.size?.percent?.doubleValue)
+                    }
+                    if focusState == dydxSimpleUITradeInputSizeViewModel.FocusState.none {
+                        self.updateFocusState(.atClosePosition)
+                    }
+                    self.viewModel?.percent = self.percent
+                }
+
+                if let marketId {
+                    self.update(tradeType: tradeType,
+                                size: size,
+                                usdcSize: usdcSize,
+                                configsAndAsset: configsAndAssetMap[marketId],
+                                focusState: focusState)
                 }
             }
             .store(in: &subscriptions)
     }
 
-    private func update(tradeInput: TradeInput,
+    private func update(tradeType: TradeSubmission.TradeType,
+                        size: Double?,
+                        usdcSize: Double?,
                         configsAndAsset: MarketConfigsAndAsset?,
                         focusState: dydxSimpleUITradeInputSizeViewModel.FocusState) {
         let marketConfigs = configsAndAsset?.configs
@@ -86,31 +151,41 @@ class dydxSimpleUITradeInputSizeViewPresenter: HostedViewPresenter<dydxSimpleUIT
 
         viewModel?.sizeItem?.placeHolder = dydxFormatter.shared.raw(number: .zero, digits: marketConfigs?.displayStepSizeDecimals?.intValue ?? 0)
         viewModel?.sizeItem?.tokenSymbol = configsAndAsset?.asset?.displayableAssetId ?? asset?.id
-        viewModel?.usdSizeItem?.placeHolder = dydxFormatter.shared.raw(number: .zero, digits: 3)
-        viewModel?.usdSizeItem?.tokenSymbol = "USD"
+        viewModel?.closePositionSizeItem?.placeHolder = dydxFormatter.shared.raw(number: .zero, digits: marketConfigs?.displayStepSizeDecimals?.intValue ?? 0)
+        viewModel?.closePositionSizeItem?.tokenSymbol = configsAndAsset?.asset?.displayableAssetId ?? asset?.id
+        viewModel?.usdcSizeItem?.placeHolder = dydxFormatter.shared.raw(number: .zero, digits: 3)
+        viewModel?.usdcSizeItem?.tokenSymbol = "USD"
 
-        for itemViewModel in [viewModel?.sizeItem, viewModel?.usdSizeItem] {
-            if tradeInput.options?.needsSize ?? false {
-                if let size = tradeInput.size?.size {
-                    itemViewModel?.size = dydxFormatter.shared.raw(number: size, digits: marketConfigs?.displayStepSizeDecimals?.intValue ?? 0)
-                } else {
-                    itemViewModel?.size = nil
-                }
-                if let usdcSize = tradeInput.size?.usdcSize {
-                    itemViewModel?.usdcSize = dydxFormatter.shared.raw(number: usdcSize, digits: 2)
-                } else {
-                    itemViewModel?.usdcSize = nil
-                }
+        let items: [dydxSimpleUITradeInputSizeItemViewModel?]
+        switch tradeType {
+        case .trade:
+            items = [viewModel?.sizeItem, viewModel?.usdcSizeItem]
+        case .closePosition:
+            items = [viewModel?.closePositionSizeItem]
+        }
+        for itemViewModel in items {
+            if let size = size {
+                itemViewModel?.size = dydxFormatter.shared.raw(number: size, digits: marketConfigs?.displayStepSizeDecimals?.intValue ?? 0)
+            } else {
+                itemViewModel?.size = nil
+            }
+            if let usdcSize = usdcSize {
+                itemViewModel?.usdcSize = dydxFormatter.shared.raw(number: usdcSize, digits: 2)
+            } else {
+                itemViewModel?.usdcSize = nil
             }
         }
 
         switch focusState {
         case .atSize:
-            viewModel?.secondaryText = viewModel?.usdSizeItem?.usdcSize ?? viewModel?.usdSizeItem?.placeHolder
-            viewModel?.secondaryToken = viewModel?.usdSizeItem?.tokenSymbol
+            viewModel?.secondaryText = viewModel?.usdcSizeItem?.usdcSize ?? viewModel?.usdcSizeItem?.placeHolder
+            viewModel?.secondaryToken = viewModel?.usdcSizeItem?.tokenSymbol
         case .atUsdcSize, .none:
             viewModel?.secondaryText = viewModel?.sizeItem?.size ?? viewModel?.sizeItem?.placeHolder
             viewModel?.secondaryToken = viewModel?.sizeItem?.tokenSymbol
+        case .atClosePosition:
+            viewModel?.secondaryText = viewModel?.closePositionSizeItem?.usdcSize ?? viewModel?.closePositionSizeItem?.placeHolder
+            viewModel?.secondaryToken = "USD"
         }
     }
 }

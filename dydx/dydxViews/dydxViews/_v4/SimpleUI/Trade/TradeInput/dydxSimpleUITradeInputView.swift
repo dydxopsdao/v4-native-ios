@@ -16,6 +16,7 @@ public class dydxSimpleUITradeInputViewModel: PlatformViewModel {
     @Published public var ctaButtonViewModel: dydxSimpleUITradeInputCtaButtonView? = dydxSimpleUITradeInputCtaButtonView()
     @Published public var sizeViewModel: dydxSimpleUITradeInputSizeViewModel? = dydxSimpleUITradeInputSizeViewModel()
 
+    @Published public var positionViewModel: dydxSimpleUITradeInputPositionViewModel? =  dydxSimpleUITradeInputPositionViewModel()
     @Published public var buyingPowerViewModel: dydxSimpleUIBuyingPowerViewModel? =  dydxSimpleUIBuyingPowerViewModel()
     @Published public var marginUsageViewModel: dydxSimpleUIMarginUsageViewModel? =  dydxSimpleUIMarginUsageViewModel()
     @Published public var feesViewModel: dydxSimpleUIFeesViewModel? = dydxSimpleUIFeesViewModel()
@@ -31,6 +32,7 @@ public class dydxSimpleUITradeInputViewModel: PlatformViewModel {
         vm.header = .previewValue
         vm.ctaButtonViewModel = .previewValue
         vm.sizeViewModel = .previewValue
+        vm.positionViewModel = .previewValue
         vm.buyingPowerViewModel = .previewValue
         vm.marginUsageViewModel = .previewValue
         vm.feesViewModel = .previewValue
@@ -49,10 +51,12 @@ public class dydxSimpleUITradeInputViewModel: PlatformViewModel {
 
                 VStack {
                     ScrollView(showsIndicators: false) {
-                        VStack {
-
+                        VStack(spacing: 16) {
                             VStack(spacing: 16) {
-                                self.buyingPowerViewModel?.createView(parentStyle: style)
+                                Group {
+                                    self.positionViewModel?.createView(parentStyle: style)
+                                    self.buyingPowerViewModel?.createView(parentStyle: style)
+                                }
                                     .padding(.horizontal, 8)
 
                                 self.sizeViewModel?
@@ -62,6 +66,7 @@ public class dydxSimpleUITradeInputViewModel: PlatformViewModel {
 
                             self.validationErrorViewModel?
                                 .createView(parentStyle: parentStyle)
+                                .animation(.default)
                         }
                         .introspectScrollView { [weak self] scrollView in
                             self?.onScrollViewCreated?(scrollView)
@@ -84,7 +89,7 @@ public class dydxSimpleUITradeInputViewModel: PlatformViewModel {
                 .padding(.horizontal, 16)
                 .padding(.top, 32)
                 .padding(.bottom, bottomPadding)
-                .themeColor(background: .layer2)
+                .themeColor(background: .layer1)
 
             // make it visible under the tabbar
             return AnyView(view.ignoresSafeArea(edges: [.bottom]))
