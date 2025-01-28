@@ -24,6 +24,7 @@ class dydxSimpleUIMarketInfoViewController: HostingViewController<PlatformView, 
             dydxSelectedMarketsStore.shared.lastSelectedMarket = selectedMarketId
             presenter.marketId = selectedMarketId
             presenter.shouldDisplayFullTradeInputOnAppear = request?.path == "/trade"
+
             return true
         }
         return false

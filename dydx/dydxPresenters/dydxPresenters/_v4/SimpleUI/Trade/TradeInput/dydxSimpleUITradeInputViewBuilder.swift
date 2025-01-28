@@ -48,6 +48,7 @@ class dydxSimpleUITradeInputViewController: HostingViewController<PlatformView, 
             AbacusStateManager.shared.trade(input: side.uppercased(), type: TradeInputField.side)
 
             presenter.tradeType = .trade
+
             return true
 
         } else if request?.path == "/trade/simple/close", let marketId = parser.asString(request?.params?["marketId"]) {
@@ -56,6 +57,7 @@ class dydxSimpleUITradeInputViewController: HostingViewController<PlatformView, 
             AbacusStateManager.shared.startClosePosition(marketId: marketId)
 
             presenter.tradeType = .closePosition
+
             return true
         }
 

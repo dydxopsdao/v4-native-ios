@@ -16,7 +16,7 @@ public class dydxFirstTimeViewBuilder: NSObject, ObjectBuilderProtocol {
     public func build<T>() -> T? {
         let presenter = dydxFirstTimeViewPresenter()
         let view = presenter.viewModel?.createView() ?? PlatformViewModel().createView()
-        return dydxFirstTimeViewController(presenter: presenter, view: view, configuration: .default) as? T
+        return dydxFirstTimeViewController(presenter: presenter, view: view, configuration: .ignoreSafeArea) as? T
     }
 }
 
@@ -35,7 +35,7 @@ class dydxFirstTimeViewController: HostingViewController<PlatformView, dydxFirst
             return
         }
 
-        presenter.showWelecomScreen()
+        presenter.showWelecomeScreen()
     }
 }
 
@@ -53,7 +53,7 @@ class dydxFirstTimeViewPresenter: HostedViewPresenter<dydxFirstTimeViewModel>, d
         viewModel = dydxFirstTimeViewModel()
     }
 
-    func showWelecomScreen() {
+    func showWelecomeScreen() {
         if !started {
             started = true
             let params = ["mode": "welcome"]

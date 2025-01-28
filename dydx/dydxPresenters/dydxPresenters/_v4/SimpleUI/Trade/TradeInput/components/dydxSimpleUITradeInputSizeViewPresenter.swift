@@ -24,7 +24,7 @@ class dydxSimpleUITradeInputSizeViewPresenter: HostedViewPresenter<dydxSimpleUIT
     @Published var tradeType: TradeSubmission.TradeType = .trade
 
     private lazy var sizeItem: dydxSimpleUITradeInputSizeItemViewModel = {
-        let item = dydxSimpleUITradeInputSizeItemViewModel(label: nil, placeHolder: "0.000", onEdited: { value in
+        let item = dydxSimpleUITradeInputSizeItemViewModel(label: nil, placeHolder: "0.000  ", onEdited: { value in
                 AbacusStateManager.shared.trade(input: value?.unlocalizedNumericValue,
                                                 type: TradeInputField.size)
         })
@@ -33,7 +33,7 @@ class dydxSimpleUITradeInputSizeViewPresenter: HostedViewPresenter<dydxSimpleUIT
     }()
 
     private lazy var closePositionSizeItem: dydxSimpleUITradeInputSizeItemViewModel = {
-        let item = dydxSimpleUITradeInputSizeItemViewModel(label: nil, placeHolder: "0.000", onEdited: { value in
+        let item = dydxSimpleUITradeInputSizeItemViewModel(label: nil, placeHolder: "0.000  ", onEdited: { value in
             AbacusStateManager.shared.closePosition(input: value?.unlocalizedNumericValue,
                                                     type: ClosePositionInputField.size)
         })
@@ -149,11 +149,13 @@ class dydxSimpleUITradeInputSizeViewPresenter: HostedViewPresenter<dydxSimpleUIT
         let marketConfigs = configsAndAsset?.configs
         let asset = configsAndAsset?.asset
 
-        viewModel?.sizeItem?.placeHolder = dydxFormatter.shared.raw(number: .zero, digits: marketConfigs?.displayStepSizeDecimals?.intValue ?? 0)
+        let stepSize = marketConfigs?.displayStepSizeDecimals?.intValue ?? 0
+        var placeHolder = dydxFormatter.shared.raw(number: .zero, digits: stepSize) ?? ""
+        viewModel?.sizeItem?.placeHolder = placeHolder
         viewModel?.sizeItem?.tokenSymbol = configsAndAsset?.asset?.displayableAssetId ?? asset?.id
-        viewModel?.closePositionSizeItem?.placeHolder = dydxFormatter.shared.raw(number: .zero, digits: marketConfigs?.displayStepSizeDecimals?.intValue ?? 0)
+        viewModel?.closePositionSizeItem?.placeHolder = placeHolder
         viewModel?.closePositionSizeItem?.tokenSymbol = configsAndAsset?.asset?.displayableAssetId ?? asset?.id
-        viewModel?.usdcSizeItem?.placeHolder = dydxFormatter.shared.raw(number: .zero, digits: 3)
+        viewModel?.usdcSizeItem?.placeHolder = "0.000"
         viewModel?.usdcSizeItem?.tokenSymbol = "USD"
 
         let items: [dydxSimpleUITradeInputSizeItemViewModel?]
