@@ -17,6 +17,7 @@ import FloatingPanel
 import PlatformRouting
 import Combine
 import dydxFormatter
+import dydxAnalytics
 
 public class dydxSimpleUITradeInputViewBuilder: NSObject, ObjectBuilderProtocol {
     public func build<T>() -> T? {

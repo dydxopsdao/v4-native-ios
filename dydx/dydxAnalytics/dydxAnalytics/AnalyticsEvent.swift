@@ -217,6 +217,44 @@ public enum AnalyticsEventV2 {
             self.type = type
         }
     }
+
+    public struct RoutingEvent: TrackableEvent {
+        let fromPath: String?
+        let toPath: String
+        let fromQuery: String?
+        let toQuery: String?
+
+        public var name: String { "RoutingEvent" }
+        public var customParameters: [String: Any] {[
+            "fromPath": fromPath ?? "nil",
+            "toPath": toPath,
+            "fromQuery": fromQuery ?? "nil",
+            "toQuery": toQuery ?? "nil"
+        ]}
+
+        public init(fromPath: String? = nil, toPath: String, fromQuery: String? = nil, toQuery: String? = nil) {
+            self.fromPath = fromPath
+            self.toPath = toPath
+            self.fromQuery = fromQuery
+            self.toQuery = toQuery
+        }
+    }
+
+    public struct ModeSelectorEvent: TrackableEvent {
+        let fromMode: String
+        let toMode: String
+
+        public var name: String { "ModeSelectorEvent" }
+        public var customParameters: [String: Any] {[
+            "from": fromMode,
+            "to": toMode
+        ]}
+
+        public init(fromMode: String, toMode: String) {
+            self.fromMode = fromMode
+            self.toMode = toMode
+        }
+    }
 }
 
 public extension TrackingProtocol {

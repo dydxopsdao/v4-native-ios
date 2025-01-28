@@ -11,6 +11,7 @@ import PlatformParticles
 import RoutingKit
 import ParticlesKit
 import PlatformUI
+import dydxAnalytics
 
 public class dydxAppModeViewBuilder: NSObject, ObjectBuilderProtocol {
     public func build<T>() -> T? {
@@ -51,12 +52,12 @@ private class dydxAppModeViewPresenter: HostedViewPresenter<dydxAppModeViewModel
             if mode != self?.viewModel?.appMode {
                 self?.viewModel?.appMode = mode
                 AppMode.current = mode
-
-                self?.loadRoot()
             }
+
+            self?.loadRoot()
         }
-        viewModel?.onCancel = {
-            Router.shared?.navigate(to: RoutingRequest(path: "/action/dismiss"), animated: true, completion: nil)
+        viewModel?.onCancel = { [weak self] in
+            self?.navigate(to: RoutingRequest(path: "/action/dismiss"), animated: true, completion: nil)
         }
     }
 
@@ -71,8 +72,8 @@ private class dydxAppModeViewPresenter: HostedViewPresenter<dydxAppModeViewModel
     }
 
     private func loadRoot() {
-        Router.shared?.navigate(to: RoutingRequest(path: "/loading"), animated: true, completion: { _, _ in
-            Router.shared?.navigate(to: RoutingRequest(path: "/"), animated: true, completion: { _, _ in
+        navigate(to: RoutingRequest(path: "/loading"), animated: true, completion: { _, _ in
+            self.navigate(to: RoutingRequest(path: "/"), animated: true, completion: { _, _ in
             })
         })
     }
@@ -87,7 +88,13 @@ public extension AppMode {
             return nil
         }
         set {
-            SettingsStore.shared?.setValue(newValue?.rawValue, forDydxKey: .appMode)
+            if current != newValue {
+                let fromMode = current?.rawValue ?? "none"
+                let toMode = newValue?.rawValue ?? "none"
+                Tracking.shared?.log(event: AnalyticsEventV2.ModeSelectorEvent(fromMode: fromMode, toMode: toMode))
+
+                SettingsStore.shared?.setValue(newValue?.rawValue, forDydxKey: .appMode)
+            }
         }
     }
 }

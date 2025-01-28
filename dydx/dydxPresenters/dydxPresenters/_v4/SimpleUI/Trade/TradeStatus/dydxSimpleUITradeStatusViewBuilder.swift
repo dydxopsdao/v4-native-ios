@@ -17,6 +17,7 @@ import FloatingPanel
 import PlatformRouting
 import Combine
 import dydxFormatter
+import dydxAnalytics
 
 public class dydxSimpleUITradeStatusViewBuilder: NSObject, ObjectBuilderProtocol {
     public func build<T>() -> T? {
@@ -62,7 +63,7 @@ private class dydxSimpleUITradeStatusViewPresenter: HostedViewPresenter<dydxSimp
         let notificationPermission = NotificationService.shared?.authorization
         if notificationPermission?.authorization == .notDetermined {
             self?.dismissView {
-                Router.shared?.navigate(to: RoutingRequest(path: "/authorization/notification", params: nil), animated: true, completion: nil)
+                self?.navigate(to: RoutingRequest(path: "/authorization/notification", params: nil), animated: true, completion: nil)
             }
         } else {
             self?.dismissView(completion: nil)
@@ -70,7 +71,7 @@ private class dydxSimpleUITradeStatusViewPresenter: HostedViewPresenter<dydxSimp
     }
 
     private func dismissView(completion: (() -> Void)?) {
-        Router.shared?.navigate(to: RoutingRequest(path: "/action/dismiss"), animated: true) { _, _ in
+        navigate(to: RoutingRequest(path: "/action/dismiss"), animated: true) { _, _ in
             completion?()
         }
     }

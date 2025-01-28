@@ -7,6 +7,7 @@ import PlatformUI
 import Combine
 import dydxStateManager
 import Abacus
+import dydxAnalytics
 
 public class dydxSimpleUIMarketInfoViewBuilder: NSObject, ObjectBuilderProtocol {
     public func build<T>() -> T? {
@@ -77,13 +78,5 @@ private class dydxSimpleUIMarketInfoViewPresenter: HostedViewPresenter<dydxSimpl
         $marketId.assign(to: &buySellPresenter.$marketId)
 
         attachChildren(workers: childPresenters)
-    }
-
-    private func floatTradeInput() {
-        if shouldDisplayFullTradeInputOnAppear {
-            Router.shared?.navigate(to: RoutingRequest(path: "/trade/input", params: ["full": "true", "market": marketId ?? ""]), animated: true, completion: nil)
-        } else {
-            Router.shared?.navigate(to: RoutingRequest(path: "/trade/input", params: ["market": marketId ?? ""]), animated: true, completion: nil)
-        }
     }
 }
