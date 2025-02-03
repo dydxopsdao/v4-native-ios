@@ -61,10 +61,10 @@ public class dydxSimpleUITradeInputCtaButtonView: PlatformViewModel {
                 } else {
                     switch side {
                     case .BUY:
-                        sideColor = ThemeColor.SemanticColor.colorGreen.color
-                        buttonText = DataLocalizer.localize(path: "APP.TRADE.SLIDE_TO_CLOSE")
+                        sideColor = Color(uiColor: UIColor(hex: "2CCC98")!)
+                        buttonText = DataLocalizer.localize(path: "APP.TRADE.SLIDE_TO_BUY")
                     case .SELL:
-                        sideColor = ThemeColor.SemanticColor.colorRed.color
+                        sideColor = Color(uiColor: UIColor(hex: "E45555")!)
                         buttonText = DataLocalizer.localize(path: "APP.TRADE.SLIDE_TO_SELL")
                     default:
                         return AnyView(PlatformView.nilView)
@@ -79,6 +79,7 @@ public class dydxSimpleUITradeInputCtaButtonView: PlatformViewModel {
                 let buttonText = text ?? DataLocalizer.localize(path: "APP.TRADE.PREVIEW")
                 let buttonContent =
                 Text(buttonText)
+                    .themeFont(fontType: .plus, fontSize: .medium)
                     .wrappedViewModel
 
                 let view = PlatformButtonViewModel(content: buttonContent,
@@ -88,18 +89,17 @@ public class dydxSimpleUITradeInputCtaButtonView: PlatformViewModel {
                     self?.ctaAction?()
                 }
                     .createView(parentStyle: style)
-                    .animation(.easeInOut(duration: 0.1))
                 return AnyView(view)
 
             } else if case .disabled = state {
                 let buttonContent = Text(buttonText ?? DataLocalizer.localize(path: "APP.TRADE.ENTER_AMOUNT"))
+                    .themeFont(fontType: .plus, fontSize: .medium)
                     .wrappedViewModel
                 let view = PlatformButtonViewModel(content: buttonContent,
                                                    type: buttonType,
                                                    state: .disabled) {
                 }
                     .createView(parentStyle: style)
-                    .animation(.easeInOut(duration: 0.1))
                 return AnyView(view)
 
             } else {
@@ -111,22 +111,23 @@ public class dydxSimpleUITradeInputCtaButtonView: PlatformViewModel {
                         indicatorShape: .rectangular(cornerRadius: 16),
                         backgroundColor: sideColor.opacity(0.3),
                         textColor: sideColor,
-                        indicatorSystemName: "chevron.right.dotted.chevron.right",
-                        indicatorDisabledSystemName: "xmark",
-                        textAlignment: .center,
+                        indicatorImageOverride: Image("icon_slider_indicator", bundle: Bundle.dydxView),
+                        textAlignment: .globalCenter,
                         textFadesOpacity: true,
                         textHiddenBehindIndicator: true,
-                        textShimmers: false
+                        textShimmers: true
                     )
 
-                    SlideButton(buttonText ?? "", styling: styling, action: { [weak self] in
-                        DispatchQueue.main.async {
+                    SlideButton(styling: styling, action: {
+                        DispatchQueue.main.async { [weak self] in
                             self?.ctaAction?()
                         }
+                    }, label: {
+                        Text(buttonText ?? "")
+                            .themeFont(fontType: .plus, fontSize: .medium)
                     })
                     .disabled(self.state.buttonDisabled)
                 }
-                    .animation(.easeInOut(duration: 0.1))
 
                 return AnyView(view)
             }
