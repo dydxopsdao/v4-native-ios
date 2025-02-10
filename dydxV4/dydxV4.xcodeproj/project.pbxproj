@@ -2808,7 +2808,7 @@
 					"$(inherited)",
 					" ",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = exchangeV4.dydx.trading;
+				PRODUCT_BUNDLE_IDENTIFIER = trade.dydx;
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -2886,7 +2886,7 @@
 					"$(inherited)",
 					" ",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = exchangeV4.dydx.trading;
+				PRODUCT_BUNDLE_IDENTIFIER = trade.dydx;
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
