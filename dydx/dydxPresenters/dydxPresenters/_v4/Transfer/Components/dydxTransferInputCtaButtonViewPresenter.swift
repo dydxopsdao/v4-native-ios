@@ -15,6 +15,7 @@ import PlatformUI
 import RoutingKit
 import Utilities
 import dydxAnalytics
+import dydxFormatter
 
 protocol dydxTransferInputCtaButtonViewPresenterProtocol: HostedViewPresenterProtocol {
     var viewModel: dydxTradeInputCtaButtonViewModel? { get }
@@ -51,18 +52,19 @@ class dydxTransferInputCtaButtonViewPresenter: HostedViewPresenter<dydxTradeInpu
         super.start()
 
         Publishers
-            .CombineLatest3(
+            .CombineLatest4(
                 AbacusStateManager.shared.state.transferInput,
                 AbacusStateManager.shared.state.validationErrors,
-                AbacusStateManager.shared.state.onboarded)
-            .sink { [weak self] transferInput, tradeErrors, isOnboarded in
-                self?.update(transferInput: transferInput, tradeErrors: tradeErrors, isOnboarded: isOnboarded)
+                AbacusStateManager.shared.state.onboarded,
+                TransferRouteSelectionInfo.shared.$selected)
+            .sink { [weak self] transferInput, tradeErrors, isOnboarded, selectedRoute in
+                self?.update(transferInput: transferInput, tradeErrors: tradeErrors, isOnboarded: isOnboarded, selectedRoute: selectedRoute)
             }
             .store(in: &subscriptions)
     }
 
-    private func update(transferInput: TransferInput, tradeErrors: [ValidationError], isOnboarded: Bool) {
-        updateCtaAction(transferInput: transferInput, isOnboarded: isOnboarded)
+    private func update(transferInput: TransferInput, tradeErrors: [ValidationError], isOnboarded: Bool, selectedRoute: TransferRouteSelection?) {
+        updateCtaAction(transferInput: transferInput, isOnboarded: isOnboarded, selectedRoute: selectedRoute)
         updateCtaButtonState(transferInput: transferInput, tradeErrors: tradeErrors, isOnboarded: isOnboarded)
     }
 
@@ -80,6 +82,9 @@ class dydxTransferInputCtaButtonViewPresenter: HostedViewPresenter<dydxTradeInpu
                 }
             } else if transferError != nil {
                 viewModel?.ctaButtonState = .disabled(DataLocalizer.localize(path: "APP.GENERAL.ERROR"))
+            } else if belowMinSizeForDeposit(transferInput: transferInput) {
+                let minUsdcAmount = dydxFormatter.shared.dollar(number: dydxNumberFeatureFlag.min_usdc_for_deposit.value, digits: 2) ?? ""
+                viewModel?.ctaButtonState = .disabled(DataLocalizer.localize(path: "APP.ONBOARDING.MINIMUM_DEPOSIT", params: ["MIN_DEPOSIT_USDC": minUsdcAmount]))
             } else {
                 switch transferType {
                 case .deposit:
@@ -104,7 +109,7 @@ class dydxTransferInputCtaButtonViewPresenter: HostedViewPresenter<dydxTradeInpu
         }
     }
 
-    private func updateCtaAction(transferInput: TransferInput, isOnboarded: Bool) {
+    private func updateCtaAction(transferInput: TransferInput, isOnboarded: Bool, selectedRoute: TransferRouteSelection?) {
         if !isOnboarded {
             self.viewModel?.ctaAction = {
                 Router.shared?.navigate(to: RoutingRequest(path: "/onboard", params: nil), animated: true, completion: nil)
@@ -115,7 +120,7 @@ class dydxTransferInputCtaButtonViewPresenter: HostedViewPresenter<dydxTradeInpu
                 self.viewModel?.ctaButtonState = .disabled(DataLocalizer.localize(path: "APP.TRADE.SUBMITTING_ORDER"))
                 switch self.transferType {
                 case .deposit:
-                    self.deposit()
+                    self.deposit(selectedRoute: selectedRoute)
                 case .withdrawal:
                     self.withdrawal()
                 case .transferOut:
@@ -138,13 +143,30 @@ class dydxTransferInputCtaButtonViewPresenter: HostedViewPresenter<dydxTradeInpu
         }
     }
 
-    private func deposit() {
+    private func belowMinSizeForDeposit(transferInput: TransferInput) -> Bool {
+        let usdcSize = parser.asDecimal(transferInput.size?.usdcSize)?.doubleValue ?? 0
+        switch transferType {
+        case .deposit:
+            return usdcSize < dydxNumberFeatureFlag.min_usdc_for_deposit.value * 0.99 // since USDC price is not always == $1.00
+        default:
+            return false
+        }
+    }
+
+    private func deposit(selectedRoute: TransferRouteSelection?) {
         Publishers.Zip(AbacusStateManager.shared.state.transferInput,
                        AbacusStateManager.shared.state.currentWallet.compactMap { $0 })
             .prefix(1)
             .flatMapLatest { input, wallet in
-                DepositTransaction(transferInput: input, walletAddress: wallet.ethereumAddress, walletId: wallet.walletId)
-                    .run()
+                let payload = selectedRoute == .instant ? input.goFastRequestPayload : input.requestPayload
+                return DepositTransaction(walletAddress: wallet.ethereumAddress,
+                                          walletId: wallet.walletId,
+                                          tokenAddress: input.tokenAddress,
+                                          chainRpc: input.chainRpc,
+                                          payload: payload,
+                                          tokenSize: input.tokenSize,
+                                          chainId: input.chain)
+                .run()
             }
             .withLatestFrom(AbacusStateManager.shared.state.transferInput)
             .sink { [weak self] event, transferInput in
@@ -158,9 +180,11 @@ class dydxTransferInputCtaButtonViewPresenter: HostedViewPresenter<dydxTradeInpu
                         self?.addTransferHash(hash: hash,
                                               fromChainName: transferInput.chainName ?? transferInput.networkName,
                                               toChainName: AbacusStateManager.shared.environment?.chainName,
-                                              transferInput: transferInput)
-                        self?.showTransferStatus(hash: hash, transferInput: transferInput)
+                                              transferInput: transferInput,
+                                              requestPayload: selectedRoute == .instant ? transferInput.goFastRequestPayload : transferInput.requestPayload)
+                        self?.showTransferStatus(hash: hash, transferInput: transferInput, isInstant: selectedRoute == .instant)
                         self?.resetInputFields()
+                        TransferTokenDetails.shared?.refresh()
                     } else {
                         ErrorInfo.shared?.info(title: DataLocalizer.localize(path: "APP.GENERAL.ERROR"),
                                                message: DataLocalizer.localize(path: "APP.V4.NO_HASH"),
@@ -361,17 +385,21 @@ class dydxTransferInputCtaButtonViewPresenter: HostedViewPresenter<dydxTradeInpu
                 addTransferHash(hash: fullHash,
                                 fromChainName: AbacusStateManager.shared.environment?.chainName,
                                 toChainName: transferInput.chainName ?? transferInput.networkName,
-                                transferInput: transferInput)
-                showTransferStatus(hash: fullHash, transferInput: transferInput)
+                                transferInput: transferInput,
+                                requestPayload: transferInput.requestPayload)
+                showTransferStatus(hash: fullHash, transferInput: transferInput, isInstant: false)
                 resetInputFields()
+                TransferTokenDetails.shared?.refresh()
             } else if let hash = result["hash"] as? String {
                 let fullHash = "0x" + hash.lowercased()
                 addTransferHash(hash: fullHash,
                                 fromChainName: AbacusStateManager.shared.environment?.chainName,
                                 toChainName: transferInput.chainName ?? transferInput.networkName,
-                                transferInput: transferInput)
-                showTransferStatus(hash: fullHash, transferInput: transferInput)
+                                transferInput: transferInput,
+                                requestPayload: transferInput.requestPayload)
+                showTransferStatus(hash: fullHash, transferInput: transferInput, isInstant: false)
                 resetInputFields()
+                TransferTokenDetails.shared?.refresh()
             } else {
                 ErrorInfo.shared?.info(title: DataLocalizer.localize(path: "APP.GENERAL.ERROR"),
                                        message: DataLocalizer.localize(path: "APP.V4.NO_HASH"),
@@ -409,32 +437,49 @@ class dydxTransferInputCtaButtonViewPresenter: HostedViewPresenter<dydxTradeInpu
                                error: nil, time: nil)
     }
 
-    private func showTransferStatus(hash: String, transferInput: TransferInput?) {
-        Router.shared?.navigate(to: RoutingRequest(path: "/action/dismiss"), animated: true) { _, _ in
-            Router.shared?.navigate(to: RoutingRequest(path: "/alerts"), animated: true) { _, _ in
-                var params = [
-                    "hash": hash
-                ] as [String: Any]
-                if let transferInput = transferInput {
-                    params["transferInput"] = transferInput
+    private func showTransferStatus(hash: String, transferInput: TransferInput?, isInstant: Bool) {
+        var params = [
+            "hash": hash
+        ] as [String: Any]
+        if let transferInput = transferInput {
+            params["transferInput"] = transferInput
+        }
+        let routePath: String
+        if isInstant {
+            routePath = "/transfer/status/instant"
+        } else {
+            routePath = "/transfer/status"
+        }
+
+        if isInstant {
+            Router.shared?.navigate(to: RoutingRequest(path: "/action/dismiss"), animated: true) { _, _ in
+                Router.shared?.navigate(to: RoutingRequest(path: routePath, params: params), animated: true, completion: nil)
+            }
+        } else {
+            Router.shared?.navigate(to: RoutingRequest(path: "/action/dismiss"), animated: true) { _, _ in
+                Router.shared?.navigate(to: RoutingRequest(path: "/alerts"), animated: true) { _, _ in
+                    Router.shared?.navigate(to: RoutingRequest(path: routePath, params: params), animated: true, completion: nil)
                 }
-                Router.shared?.navigate(to: RoutingRequest(path: "/transfer/status", params: params), animated: true, completion: nil)
             }
         }
     }
 
-    private func addTransferHash(hash: String, fromChainName: String?, toChainName: String?, transferInput: TransferInput) {
+    private func addTransferHash(hash: String,
+                                 fromChainName: String?,
+                                 toChainName: String?,
+                                 transferInput: TransferInput,
+                                 requestPayload: TransferInputRequestPayload?) {
         let transfer = dydxTransferInstance(transferType: transferType.transferInstanceType,
                                             transactionHash: hash.lowercased(),
-                                            fromChainId: transferInput.requestPayload?.fromChainId,
+                                            fromChainId: requestPayload?.fromChainId,
                                             fromChainName: fromChainName,
-                                            toChainId: transferInput.requestPayload?.toChainId,
+                                            toChainId: requestPayload?.toChainId,
                                             toChainName: toChainName,
                                             date: Date(),
                                             usdcSize: parser.asDecimal(transferInput.size?.usdcSize)?.doubleValue,
                                             size: parser.asDecimal(transferInput.size?.size)?.doubleValue,
                                             isCctp: transferInput.isCctp,
-                                            requestId: transferInput.requestPayload?.requestId)
+                                            requestId: requestPayload?.requestId)
         AbacusStateManager.shared.addTransferInstance(transfer: transfer)
     }
 

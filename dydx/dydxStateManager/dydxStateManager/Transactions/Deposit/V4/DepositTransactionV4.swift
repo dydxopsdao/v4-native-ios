@@ -17,7 +17,9 @@ struct DepositTransactionV4: AsyncStep {
     typealias ProgressType = Void
     typealias ResultType = String
 
-    let transferInput: TransferInput
+    let payload: TransferInputRequestPayload?
+    let tokenSize: BigUInt?
+    let chainId: String?
     let provider: CarteraProvider
     let walletAddress: String
     let walletId: String?
@@ -25,11 +27,11 @@ struct DepositTransactionV4: AsyncStep {
     let tokenAddress: String
 
     func run() -> AnyPublisher<AsyncEvent<Void, ResultType>, Never> {
-        guard let targetAddress = transferInput.requestPayload?.targetAddress,
-              let tokenSize = transferInput.tokenSize,
-              let chainId = transferInput.chain,
+        guard let payload = payload,
+              let targetAddress = payload.targetAddress,
+              let tokenSize = tokenSize,
+              let chainId = chainId,
               let chainIdInt = Parser.standard.asInt(chainId),
-              let payload = transferInput.requestPayload,
               let ethereumTransactionRequest = EthereumTransactionRequest(requestPayload: payload,
                                                                           chainId: chainIdInt,
                                                                           walletAddress: walletAddress) else {
@@ -48,8 +50,7 @@ struct DepositTransactionV4: AsyncStep {
             .flatMap { event -> AnyPublisher<AsyncEvent<Void, String>, Never> in
                 if case let .result(enabled, error) = event {
                     if enabled == true {
-                        let transaction = EthereumTransactionRequest(transaction: ethereumTransactionRequest.transaction)
-                        return WalletSendTransactionStep(transaction: transaction,
+                        return WalletSendTransactionStep(transaction: ethereumTransactionRequest,
                                                          chainIdInt: chainIdInt,
                                                          provider: provider,
                                                          walletAddress: walletAddress,
@@ -101,8 +102,8 @@ private extension EthereumTransactionRequest {
         }
 
         let value: EthereumQuantity?
-        if let payloadValue = requestPayload.value {
-            value = try? EthereumQuantity(payloadValue)
+        if let payloadValue = requestPayload.value, let bigUIntValue = payloadValue.asBigUInt {
+            value = EthereumQuantity(quantity: bigUIntValue)
         } else {
             value = nil
         }
