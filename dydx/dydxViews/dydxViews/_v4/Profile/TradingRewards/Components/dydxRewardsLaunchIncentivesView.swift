@@ -23,18 +23,10 @@ public class dydxRewardsLaunchIncentivesViewModel: PlatformViewModel {
     }()
 
     private let launchIncentivesFormatted: AttributedString = {
-        guard let launchIncentives = DataLocalizer.shared?.localize(path: "APP.TRADING_REWARDS.LAUNCH_INCENTIVES", params: nil) else { return .init() }
-        let localizedString = DataLocalizer.shared?.localize(path: "APP.TRADING_REWARDS.FOR_V4", params: ["SUBJECT": launchIncentives]) ?? ""
-
-        var attributedString = AttributedString(localizedString)
-            .themeFont(fontType: .base, fontSize: .medium)
-
-        attributedString = attributedString.themeColor(foreground: .textTertiary, to: nil)
-        if let launchIncentivesRange = attributedString.range(of: launchIncentives) {
-            attributedString = attributedString.themeColor(foreground: .textPrimary, to: launchIncentivesRange)
-        }
-
-        return attributedString
+        guard let launchIncentives = DataLocalizer.shared?.localize(path: "APP.REWARDS_SURGE_APRIL_2025.SURGE_HEADLINE", params: nil) else { return .init() }
+        return AttributedString(launchIncentives)
+           .themeFont(fontType: .base, fontSize: .medium)
+           .themeColor(foreground: .textPrimary)
     }()
 
     private var pointsFormatted: AttributedString {
@@ -56,14 +48,13 @@ public class dydxRewardsLaunchIncentivesViewModel: PlatformViewModel {
         HStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 52) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(DataLocalizer.shared?.localize(path: "APP.PORTFOLIO.ESTIMATED_REWARDS", params: nil) ?? "")
+                    Text(DataLocalizer.shared?.localize(path: "APP.TRADING_REWARDS.ESTIMATED_POINTS", params: nil) ?? "")
                         .themeFont(fontType: .base, fontSize: .medium)
                         .themeColor(foreground: .textPrimary)
-                    if let seasonOrdinal {
-                        Text(DataLocalizer.shared?.localize(path: "APP.TRADING_REWARDS.SEASON_ID", params: ["SEASON_ID": seasonOrdinal]) ?? "")
-                            .themeFont(fontType: .base, fontSize: .small)
-                            .themeColor(foreground: .textPrimary)
-                    }
+
+                    Text(DataLocalizer.shared?.localize(path: "APP.TRADING_REWARDS.TOTAL_POINTS", params: nil) ?? "")
+                        .themeFont(fontType: .base, fontSize: .small)
+                        .themeColor(foreground: .textTertiary)
                 }
                 Text(pointsFormatted)
             }
@@ -111,13 +102,24 @@ public class dydxRewardsLaunchIncentivesViewModel: PlatformViewModel {
     }
 
     public override func createView(parentStyle: ThemeStyle = ThemeStyle.defaultStyle, styleKey: String? = nil) -> PlatformView {
-        PlatformView(viewModel: self, parentStyle: parentStyle, styleKey: styleKey) { [weak self] _  in
+        PlatformView(viewModel: self, parentStyle: parentStyle, styleKey: styleKey) { [weak self] style  in
             guard let self = self else { return AnyView(PlatformView.nilView) }
             return VStack(spacing: 16) {
                 self.createEstimateSubCard()
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(self.launchIncentivesFormatted)
-                    Text(DataLocalizer.shared?.localize(path: "APP.TRADING_REWARDS.LAUNCH_INCENTIVES_DESCRIPTION", params: nil) ?? "")
+                    HStack {
+                        Text(self.launchIncentivesFormatted)
+
+                        Text(DataLocalizer.localize(path: "APP.GENERAL.ACTIVE"))
+                            .themeColor(foreground: .colorGreen)
+                            .themeFont(fontType: .base, fontSize: .smaller)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 4)
+                            .border(borderWidth: 1, cornerRadius: 4, borderColor: ThemeColor.SemanticColor.colorGreen.color)
+
+                        Spacer()
+                    }
+                    Text(DataLocalizer.shared?.localize(path: "APP.REWARDS_SURGE_APRIL_2025.SURGE_BODY", params: nil) ?? "")
                         .themeFont(fontType: .base, fontSize: .small)
                         .themeColor(foreground: .textTertiary)
                     HStack(spacing: 8) {
@@ -130,11 +132,10 @@ public class dydxRewardsLaunchIncentivesViewModel: PlatformViewModel {
                     }
                 }
                 HStack(spacing: 10) {
-                    self.createAboutButton(parentStyle: parentStyle)
+                    self.createAboutButton(parentStyle: style)
                         .fixedSize()
-                    self.createLeaderboardButton(parentStyle: parentStyle)
+                    self.createLeaderboardButton(parentStyle: style)
                 }
-
             }
             .padding(.all, 16)
             .themeColor(background: .layer3)
