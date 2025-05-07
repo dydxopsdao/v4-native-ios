@@ -78,12 +78,28 @@ private class dydxSocialLoginViewPresenter: HostedViewPresenter<dydxSocialLoginV
 
     private let walletSetup = dydxPrivyWalletSetup(privy: PrivyAuthManager.shared?.privy)
 
+    private var email: String?
+
     override init() {
         super.init()
 
         viewModel = dydxSocialLoginViewModel()
         viewModel?.connectWallet = connectWalletViewModel
         viewModel?.oauthViews = [googleViewModel, twitterViewModel]
+        viewModel?.emailInput?.onEdited = { [weak self] text in
+            guard let self = self else { return }
+            self.email = text
+            if let text = text, self.isValidEmail(text) {
+                self.viewModel?.emailInput?.isValid = true
+            } else {
+                self.viewModel?.emailInput?.isValid = false
+            }
+            self.viewModel?.objectWillChange.send()
+        }
+        viewModel?.emailInput?.submitAction = { [weak self] in
+            guard let self = self else { return }
+            self.performEmail(self.email ?? "")
+        }
     }
 
     override func start() {
@@ -96,16 +112,44 @@ private class dydxSocialLoginViewPresenter: HostedViewPresenter<dydxSocialLoginV
             .store(in: &subscriptions)
     }
 
-    private func performAction(type: OAuthType, walletId: String) {
+    private func isValidEmail(_ email: String) -> Bool {
+        let pattern =
+            #"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$"#
+
+        let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
+        let range = NSRange(email.startIndex..<email.endIndex, in: email)
+        return regex?.firstMatch(in: email, options: [], range: range) != nil
+    }
+
+    private func performEmail(_ email: String) {
         Task {
-            let ret = await PrivyAuthManager.shared?.loginOAuth(type: type)
-            if let error = ret?.error {
+            let success = await PrivyAuthManager.shared?.sendEmailCode(email: email)
+            if success == true {
+                DispatchQueue.main.async {
+                    Router.shared?.navigate(to: RoutingRequest(path: "/onboard/social/otp",
+                                                               params: ["email": email]), animated: true, completion: nil)
+                }
+            } else {
                 DispatchQueue.main.async {
                     ErrorInfo.shared?.info(title: DataLocalizer.localize(path: "APP.GENERAL.FAILED"),
                                            message: nil,
                                            type: .error,
-                                           error: error)
+                                           error: nil)
                 }
+            }
+        }
+    }
+
+    private func performAction(type: OAuthType, walletId: String) {
+        Task {
+            let ret = await PrivyAuthManager.shared?.loginOAuth(type: type)
+            if let error = ret?.error {
+//                DispatchQueue.main.async {
+//                    ErrorInfo.shared?.info(title: DataLocalizer.localize(path: "APP.GENERAL.FAILED"),
+//                                           message: nil,
+//                                           type: .error,
+//                                           error: error)
+//                }
             } else {
                 let status = await PrivyAuthManager.shared?.getEmbeddedWallet()
                 if let status {
