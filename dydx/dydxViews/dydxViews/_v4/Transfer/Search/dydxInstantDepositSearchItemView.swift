@@ -46,8 +46,9 @@ public class dydxInstantDepositSearchItemViewModel: PlatformViewModel {
                     PlatformIconViewModel(type: .url(url: self.tokenIcon), clip: .circle(background: .transparent, spacing: 0), size: CGSize(width: 32, height: 32))
                         .createView(parentStyle: style)
 
-                    PlatformIconViewModel(type: .url(url: self.chainIcon), clip: .circle(background: .transparent, spacing: 0), size: CGSize(width: 14, height: 14))
+                    PlatformIconViewModel(type: .url(url: self.chainIcon), clip: .circle(background: .transparent, spacing: 0), size: CGSize(width: 18, height: 18))
                         .createView(parentStyle: style)
+                        .borderAndClip(style: .circle, borderColor: .layer3, lineWidth: 2)
                         .rightAligned()
                         .bottomAligned()
                 }
@@ -79,14 +80,11 @@ public class dydxInstantDepositSearchItemViewModel: PlatformViewModel {
                 .if(self.selected) { view in
                     view.borderAndClip(style: .cornerRadius(12), borderColor: .colorPurple, lineWidth: 2)
                 }
+                .onTapGesture { [weak self] in
+                    self?.selectAction?()
+                }
 
-            let button = Button {
-                self.selectAction?()
-            } label: {
-                view
-            }
-
-            return AnyView(button)
+            return AnyView(view)
         }
     }
 }
