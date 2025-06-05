@@ -1,0 +1,152 @@
+name: "Release iOS + Push Datadog Metric (with dry-run)"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Exact iOS version string in App Store Connect (e.g. 1.12.5)"
+        required: true
+        default: "1.12.5"
+      dry_run:
+        description: "If true, skip the App Store Connect release API call"
+        required: false
+        default: "true"
+
+env:
+  APP_STORE_APP_ID:             ${{ secrets.APP_STORE_APP_ID }}
+  APPSTORE_KEY_ID:              ${{ secrets.APPSTORE_KEY_ID }}
+  APPSTORE_ISSUER_ID:           ${{ secrets.APPSTORE_ISSUER_ID }}
+  APPSTORE_PRIVATE_KEY_BASE64:  ${{ secrets.APPSTORE_PRIVATE_KEY_BASE64 }}
+  DD_API_KEY:                   ${{ secrets.DD_API_KEY }}
+
+jobs:
+  release-and-metric:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Write App Store Connect Private Key to disk
+        run: |
+          mkdir -p ./AuthKey
+          echo "${{ env.APPSTORE_PRIVATE_KEY_BASE64 }}" \
+            | base64 --decode > AuthKey/AuthKey_${{ env.APPSTORE_KEY_ID }}.p8
+
+      - name: Generate JWT for App Store Connect API
+        id: generate_jwt
+        run: |
+          set -e
+          KEY_ID="${{ env.APPSTORE_KEY_ID }}"
+          ISSUER_ID="${{ env.APPSTORE_ISSUER_ID }}"
+          P8_PATH="AuthKey/AuthKey_${KEY_ID}.p8"
+
+          NOW=$(date +%s)
+          EXP=$((NOW + 600))
+
+          HEADER_JSON='{"alg":"ES256","kid":"'"${KEY_ID}"'"}'
+          HEADER=$(printf '%s' "$HEADER_JSON" \
+            | openssl base64 -e -A | tr '+/' '-_' | tr -d '=')
+
+          PAYLOAD_JSON='{"iss":"'"${ISSUER_ID}"'","exp":'"${EXP}"',"aud":"appstoreconnect-v1"}'
+          PAYLOAD=$(printf '%s' "$PAYLOAD_JSON" \
+            | openssl base64 -e -A | tr '+/' '-_' | tr -d '=')
+
+          SIGNATURE=$(printf "%s.%s" "$HEADER" "$PAYLOAD" \
+            | openssl dgst -binary -sha256 -sign "$P8_PATH" \
+            | openssl base64 -e -A | tr '+/' '-_' | tr -d '=')
+
+          JWT_TOKEN="${HEADER}.${PAYLOAD}.${SIGNATURE}"
+          echo "JWT=${JWT_TOKEN}" >> $GITHUB_OUTPUT
+
+      - name: Fetch appStoreVersion ID for v${{ github.event.inputs.version }}
+        id: lookup_version_id
+        run: |
+          set -e
+          JWT_TOKEN="${{ steps.generate_jwt.outputs.JWT }}"
+          APP_ID="${{ env.APP_STORE_APP_ID }}"
+          VERSION_STRING="${{ github.event.inputs.version }}"
+
+          RESPONSE=$(
+            curl -s \
+              -H "Authorization: Bearer ${JWT_TOKEN}" \
+              "https://api.appstoreconnect.apple.com/v1/apps/${APP_ID}/appStoreVersions?filter[platform]=IOS&filter[versionString]=${VERSION_STRING}"
+          )
+          VERSION_ID=$(echo "$RESPONSE" | jq -r '.data[0].id // empty')
+          if [ -z "$VERSION_ID" ]; then
+            echo "❌ No matching appStoreVersion found for '${VERSION_STRING}' (as expected if this is a test)."
+            echo "$RESPONSE"
+            exit 1
+          fi
+          echo "VERSION_ID=${VERSION_ID}" >> $GITHUB_OUTPUT
+
+      - name: Maybe trigger App Store Connect release
+        if: ${{ github.event.inputs.dry_run == 'false' }}
+        run: |
+          set -e
+          JWT_TOKEN="${{ steps.generate_jwt.outputs.JWT }}"
+          VERSION_ID="${{ steps.lookup_version_id.outputs.VERSION_ID }}"
+
+          HTTP_CODE=$(
+            curl -s -o /dev/null -w "%{http_code}" -X POST \
+              -H "Authorization: Bearer ${JWT_TOKEN}" \
+              -H "Content-Type: application/json" \
+              "https://api.appstoreconnect.apple.com/v1/appStoreVersionReleaseRequests" \
+              -d '{
+                    "data": {
+                      "type": "appStoreVersionReleaseRequests",
+                      "relationships": {
+                        "appStoreVersion": {
+                          "data": {
+                            "type": "appStoreVersions",
+                            "id": "'"${VERSION_ID}"'"
+                          }
+                        }
+                      }
+                    }
+                  }'
+          )
+
+          if [[ "$HTTP_CODE" -ge 200 && "$HTTP_CODE" -lt 300 ]]; then
+            echo "✅ [Production] Released version ID ${VERSION_ID} to Ready for Distribution."
+          else
+            echo "❌ [Production] Failed to release version ID ${VERSION_ID} (HTTP ${HTTP_CODE})."
+            exit 1
+          fi
+
+      - name: Send Deploy Count Metric to Datadog
+        run: |
+          set -e
+          TIMESTAMP=$(date +%s)
+          METRIC_NAME="dydxops.deploy.ios"
+          VERSION_STRING="${{ github.event.inputs.version }}"
+
+          DD_ENDPOINT="https://api.datadoghq.com"
+
+          PAYLOAD=$(cat <<EOF
+{
+  "series": [
+    {
+      "metric": "${METRIC_NAME}",
+      "points": [[ ${TIMESTAMP}, 1 ]],
+      "type": "count",
+      "tags": ["platform:ios","version:${VERSION_STRING}","env:prod","dry_run:${{ github.event.inputs.dry_run }}"]
+    }
+  ]
+}
+EOF
+          )
+
+          HTTP_CODE=$(
+            curl -s -o /dev/null -w "%{http_code}" \
+              -X POST "${DD_ENDPOINT}/api/v1/series?api_key=${{ env.DD_API_KEY }}" \
+              -H "Content-Type: application/json" \
+              -d "${PAYLOAD}"
+          )
+
+          if [[ "$HTTP_CODE" -ge 200 && "$HTTP_CODE" -lt 300 ]]; then
+            echo "✅ Datadog metric sent (HTTP ${HTTP_CODE})."
+          else
+            echo "❌ Failed to send Datadog metric (HTTP ${HTTP_CODE})."
+            exit 1
+          fi
