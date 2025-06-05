@@ -124,17 +124,17 @@ jobs:
           DD_ENDPOINT="https://api.datadoghq.com"
 
           PAYLOAD=$(cat <<EOF
-{
-  "series": [
-    {
-      "metric": "${METRIC_NAME}",
-      "points": [[ ${TIMESTAMP}, 1 ]],
-      "type": "count",
-      "tags": ["platform:ios","version:${VERSION_STRING}","env:prod","dry_run:${{ github.event.inputs.dry_run }}"]
-    }
-  ]
-}
-EOF
+            {
+              "series": [
+                {
+                  "metric": "${METRIC_NAME}",
+                  "points": [[ ${TIMESTAMP}, 1 ]],
+                  "type": "count",
+                  "tags": ["platform:ios","version:${VERSION_STRING}","env:prod","dry_run:${{ github.event.inputs.dry_run }}"]
+                }
+              ]
+            }
+            EOF
           )
 
           HTTP_CODE=$(
