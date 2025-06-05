@@ -81,6 +81,7 @@ jobs:
           echo "VERSION_ID=${VERSION_ID}" >> $GITHUB_OUTPUT
 
       - name: Maybe trigger App Store Connect release
+        id: app_store_release
         if: ${{ github.event.inputs.dry_run == 'false' }}
         run: |
           set -e
@@ -115,6 +116,7 @@ jobs:
           fi
 
       - name: Send Deploy Count Metric to Datadog
+        if: ${{ github.event.inputs.dry_run == 'false' && steps.app_store_release.outcome == 'success' }}
         run: |
           set -e
           TIMESTAMP=$(date +%s)
