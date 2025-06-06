@@ -13,7 +13,6 @@ on:
         default: "true"
 
 env:
-  # These must exactly match the secret names in your repo
   APPLE_APP_IDENTIFIER:        ${{ secrets.APPLE_APP_IDENTIFIER }}
   APPSTORE_KEY_ID:             ${{ secrets.APPSTORE_KEY_ID }}
   APPSTORE_ISSUER_ID:          ${{ secrets.APPSTORE_ISSUER_ID }}
@@ -61,6 +60,7 @@ jobs:
             | openssl base64 -e -A | tr '+/' '-_' | tr -d '=')
 
           JWT_TOKEN="${HEADER}.${PAYLOAD}.${SIGNATURE}"
+          echo "::add-mask::${JWT_TOKEN}"
           echo "JWT=${JWT_TOKEN}" >> $GITHUB_OUTPUT
 
       - name: Fetch appStoreVersion ID for v${{ github.event.inputs.version }}
@@ -163,3 +163,8 @@ jobs:
             echo "❌ Failed to send Datadog metric (HTTP ${HTTP_CODE})."
             exit 1
           fi
+      - name: Clean up App Store Connect Private Key
+        if: always() 
+        run: |
+          rm -f ./AuthKey/AuthKey_${APPSTORE_KEY_ID}.p8
+          rmdir ./AuthKey || true
