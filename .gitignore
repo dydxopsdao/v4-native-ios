@@ -26,3 +26,4 @@ scripts/percy_test.sh
 *.mobileprovision
 *.ipa
 *.dSYM.*
+.secrets
