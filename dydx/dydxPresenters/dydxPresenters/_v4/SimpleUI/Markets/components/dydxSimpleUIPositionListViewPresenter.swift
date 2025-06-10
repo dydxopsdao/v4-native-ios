@@ -33,21 +33,34 @@ class dydxSimpleUIPositionListViewPresenter: HostedViewPresenter<dydxSimpleUIPos
     override func start() {
         super.start()
 
+        let modifiersPublisher =
+            Publishers
+                .CombineLatest(
+                    SimpleUIPositionToggleOptionState.shared.$current,
+                    $favUpdated)
+                .map { ($0, $1) }
+                .eraseToAnyPublisher()
+
         Publishers
             .CombineLatest4(AbacusStateManager.shared.state.marketList,
                             AbacusStateManager.shared.state.assetMap,
-                            AbacusStateManager.shared.state.selectedSubaccountPositions,
-                            $favUpdated
+                            AbacusStateManager.shared.state.selectedSubaccount,
+                            modifiersPublisher
             )
-           .sink { [weak self] markets, assetMap, positions, _ in
-               self?.updateMarketList(markets: markets, assetMap: assetMap, positions: positions)
+           .sink { [weak self] markets, assetMap, subaccount, modifier in
+               self?.updateMarketList(markets: markets,
+                                      assetMap: assetMap,
+                                      subaccount: subaccount,
+                                      positionToggleOption: modifier.0)
             }
             .store(in: &subscriptions)
     }
 
     private func updateMarketList(markets: [PerpetualMarket],
                                   assetMap: [String: Asset],
-                                  positions: [SubaccountPosition]) {
+                                  subaccount: Subaccount?,
+                                  positionToggleOption: SimpleUIPositionToggleOption) {
+        let positions = subaccount?.openPositions ?? []
         let markets = markets.filter { $0.status?.canTrade == true }
         viewModel?.positions = markets
             .compactMap { market in
@@ -65,8 +78,10 @@ class dydxSimpleUIPositionListViewPresenter: HostedViewPresenter<dydxSimpleUIPos
                     displayType: .position,
                     market: market,
                     asset: asset,
+                    subaccount: subaccount,
                     position: position,
                     isFavorite: isFavorite,
+                    positionToggleOption: positionToggleOption,
                     onMarketSelected: { [weak self] in
                         self?.navigate(to: RoutingRequest(path: "/market", params: ["market": market.id]), animated: true, completion: nil)
                     },
