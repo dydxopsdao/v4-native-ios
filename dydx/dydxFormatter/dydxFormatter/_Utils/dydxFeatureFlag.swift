@@ -12,19 +12,17 @@ import Utilities
 public enum dydxBoolFeatureFlag: String, CaseIterable {
     case force_mainnet
     case enable_app_rating
-    case isVaultEnabled = "ff_vault_enabled"
     case showPredictionMarketsUI = "ff_show_prediction_markets_ui"
     case simple_ui = "ff_simple_ui"
     case skip_go_fast = "ff_skip_go_fast"
     case privy_ios = "ff_privy_ios"
+    case turnkey_ios = "ff_turnkey_ios"
 
     var defaultValue: Bool {
         switch self {
         case .force_mainnet:
             return false
         case .enable_app_rating:
-            return true
-        case .isVaultEnabled:
             return true
         case .showPredictionMarketsUI:
             return false
@@ -33,6 +31,8 @@ public enum dydxBoolFeatureFlag: String, CaseIterable {
         case .skip_go_fast:
             return true
         case .privy_ios:
+            return false
+        case .turnkey_ios:
             return false
         }
     }
