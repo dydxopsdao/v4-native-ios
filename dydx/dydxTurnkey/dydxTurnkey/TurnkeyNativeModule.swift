@@ -18,6 +18,8 @@ class TurnkeyNativeModule: NSObject, RCTBridgeModule {
       return false
     }
 
+    weak var delegate: TurnkeyBridgeManagerDelegate?
+
     private var pendingCompletions: [String: (String) -> Void] = [:]
 
     func callMyJsFunction(completion: @escaping (String) -> Void) {
@@ -42,4 +44,26 @@ class TurnkeyNativeModule: NSObject, RCTBridgeModule {
             pendingCompletions.removeValue(forKey: callbackId)
         }
     }
+
+    @objc(onAuthRouteToWallet)
+    func onAuthRouteToWallet() {
+        DispatchQueue.main.async { [weak self] in
+            self?.delegate?.onAuthRouteToWallet()
+        }
+    }
+
+    @objc(onAuthRouteToDesktopQR)
+    func onAuthRouteToDesktopQR() {
+        DispatchQueue.main.async { [weak self] in
+            self?.delegate?.onAuthRouteToDesktopQR()
+        }
+    }
+
+    @objc(onAuthCompleted:::)
+    func onAuthCompleted(onboardingSignature: String, evmAddress: String, svmAddress: String) {
+        DispatchQueue.main.async { [weak self] in
+            self?.delegate?.onAuthCompleted(onboardingSignature: onboardingSignature, evmAddress: evmAddress, svmAddress: svmAddress)
+        }
+    }
+
 }

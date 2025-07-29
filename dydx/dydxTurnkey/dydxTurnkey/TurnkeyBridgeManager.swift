@@ -8,8 +8,20 @@
 import Foundation
 import React
 
+public protocol TurnkeyBridgeManagerDelegate: AnyObject {
+    func onAuthRouteToWallet()
+    func onAuthRouteToDesktopQR()
+    func onAuthCompleted(onboardingSignature: String, evmAddress: String, svmAddress: String)
+}
+
 public class TurnkeyBridgeManager {
     public static let shared = TurnkeyBridgeManager()
+
+    public weak var delegate: TurnkeyBridgeManagerDelegate? {
+        didSet {
+            module.delegate = delegate
+        }
+    }
 
     public lazy var bridge: RCTBridge = {
         RCTBridge(bundleURL: Self.bundleURL!,

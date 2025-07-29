@@ -5,7 +5,20 @@ export const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#1c1c1e',
     padding: 20,
-    justifyContent: 'center',
+    paddingTop: 12, // to give some breathing room
+    justifyContent: 'flex-start', // Align items to the top
+  },
+  content: {
+    flex: 1, 
+    justifyContent: 'space-between'
+  },
+  dragHandle: {
+    alignSelf: 'center',
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#ccc',
+    marginBottom: 12,
   },
   title: {
     fontSize: 24,
