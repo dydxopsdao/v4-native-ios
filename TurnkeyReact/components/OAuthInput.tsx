@@ -6,7 +6,9 @@ import { View, Text, DeviceEventEmitter } from "react-native";
 import { styles } from "../turnkeyStyle";
 import { OAuthRequest } from "../providers/authRelayProvider";
 import { EmbeddedKeyAndNonce, useEmbeddedKeyAndNonce } from "./useEmbeddedKeyAndNonce";
-import { AppleSignInCompletedEvent, NativeToJsRequestEvent, TurnkeyNativeModule } from "../../TurnkeyModule";
+import { AppleSignInCompletedEvent, TurnkeyNativeModule } from "../../TurnkeyModule";
+import { useAuthRelay } from "../hooks/useAuthRelay";
+import { useEffect } from "react";
 
 type OAuthProps = {
   onSuccess: (params: OAuthRequest) => Promise<void>;
@@ -64,24 +66,26 @@ export const AppleAuthButton: React.FC<OAuthProps> = ({
   configs,
   embeddedKeyAndNonce
 }: OAuthProps) => {
-  DeviceEventEmitter.addListener(
-    'AppleSignInCompleted',
-    async ({ identityToken, error }: AppleSignInCompletedEvent) => {
-      console.log("Apple Sign-In Completed:", identityToken, error);
-      if (identityToken !== null && embeddedKeyAndNonce.targetPublicKey) {
-        await onSuccess({
-          oidcToken: identityToken,
-          providerName: "apple",
-          embeddedKeyAndNonce: embeddedKeyAndNonce,
-          configs: configs,
-        });
+  useEffect(() => {
+    DeviceEventEmitter.removeAllListeners('AppleSignInCompleted');
+    DeviceEventEmitter.addListener(
+      'AppleSignInCompleted',
+      async ({ identityToken, error }: AppleSignInCompletedEvent) => {
+        if (identityToken !== null && embeddedKeyAndNonce.targetPublicKey) {
+          await onSuccess({
+            oidcToken: identityToken,
+            providerName: "apple",
+            embeddedKeyAndNonce: embeddedKeyAndNonce,
+            configs: configs,
+          });
 
-        // we refresh the nonce before authentication to ensure a new one is used
-        // if the user logs out and logs in with oAuth again
-        await embeddedKeyAndNonce.refreshNonce();
+          // we refresh the nonce before authentication to ensure a new one is used
+          // if the user logs out and logs in with oAuth again
+          await embeddedKeyAndNonce.refreshNonce();
+        }
       }
-    }
-  );
+    );
+  })
 
   const handleAppleAuth = async () => {
     if (!embeddedKeyAndNonce.nonce) {

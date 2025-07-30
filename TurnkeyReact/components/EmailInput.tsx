@@ -1,18 +1,48 @@
 import * as React from "react";
 import { Input } from "../components/ui/input";
 import { styles } from "../turnkeyStyle";
+import { DeviceEventEmitter } from "react-native";
+import { EmailTokenReceivedEvent } from "../../TurnkeyModule";
+import { useEffect } from "react";
+import { useAuthRelay } from "../hooks/useAuthRelay";
+import { TurnkeyConfigs } from "../sharedConfigs";
+import { EmbeddedKeyAndNonce } from "./useEmbeddedKeyAndNonce";
 
 interface EmailInputProps {
   initialValue?: string;
   onEmailChange: (email: string) => void;
   onValidationChange?: (isValid: boolean) => void;
+  embeddedKeyAndNonce: EmbeddedKeyAndNonce;
+  configs: TurnkeyConfigs;
 }
 
 export const EmailInput = ({
   initialValue,
   onEmailChange,
   onValidationChange,
+  embeddedKeyAndNonce,
+  configs,
 }: EmailInputProps) => {
+  const { completeOtpAuth } = useAuthRelay();
+
+  useEffect(() => {
+    DeviceEventEmitter.removeAllListeners('EmailTokenReceived');
+    DeviceEventEmitter.addListener(
+      'EmailTokenReceived',
+      async ({ token }: EmailTokenReceivedEvent) => {
+        console.log("Email token Received:", token);
+        completeOtpAuth({
+          otpType: "email",
+          token: token,
+          embeddedKeyAndNonce: embeddedKeyAndNonce,
+          configs: configs,
+        });
+
+        await embeddedKeyAndNonce.refreshNonce();
+      }
+    );
+  }, [embeddedKeyAndNonce]);
+
   const [email, setEmail] = React.useState(initialValue ?? "");
 
   const handleEmailChange = (text: string) => {
@@ -23,9 +53,10 @@ export const EmailInput = ({
     onValidationChange?.(isValid);
   };
 
+
   return (
     <Input
-      style={styles.emailInput}    
+      style={styles.emailInput}
       autoCapitalize="none"
       autoComplete="email"
       autoCorrect={false}

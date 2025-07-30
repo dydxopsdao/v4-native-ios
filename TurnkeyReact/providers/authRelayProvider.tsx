@@ -8,6 +8,12 @@ import { TurnkeyNativeModule } from "../../TurnkeyModule";
 import { DydxTurnkeySession } from "./dydxTurnkeySession";
 import { EmbeddedKeyAndNonce } from "../components/useEmbeddedKeyAndNonce";
 import { TurnkeyConfigs } from "../sharedConfigs";
+import { decryptCredentialBundle, getPublicKey } from "@turnkey/crypto";
+import {
+  uint8ArrayToHexString,
+} from "@turnkey/encoding";
+import { getValueWithKey, setValueWithKey } from "../lib/store";
+import { STORAGE_KEY } from "../lib/constants";
 
 type AuthActionType =
   | { type: "PASSKEY"; payload: User }
@@ -74,14 +80,17 @@ export type OtpAuthRequest = {
   configs: TurnkeyConfigs;
 };
 
+export type OtpAuthComplete = {
+  otpType: string;
+  token: string;
+  embeddedKeyAndNonce: EmbeddedKeyAndNonce;
+  configs: TurnkeyConfigs;
+};
+
 export interface AuthRelayProviderType {
   state: AuthState;
   initOtpLogin: (params: OtpAuthRequest) => Promise<void>;
-  completeOtpAuth: (params: {
-    otpId: string;
-    otpCode: string;
-    organizationId: string;
-  }) => Promise<void>;
+  completeOtpAuth: (params: OtpAuthComplete) => Promise<void>;
   signUpWithPasskey: () => Promise<void>;
   loginWithPasskey: () => Promise<void>;
   loginWithOAuth: (params: OAuthRequest) => Promise<void>;
@@ -120,25 +129,55 @@ export const AuthRelayProvider: React.FC<AuthRelayProviderProps> = ({
       "signinMethod": "email",
       "userEmail": contact,
       "targetPublicKey": embeddedKeyAndNonce.targetPublicKey,
+      "magicLink": "https://v4.testnet.dydx.exchange/onboard/turnkey?token",
     };
     const headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     };
 
-    sendSignInRequest(headers, JSON.stringify(inputBody), embeddedKeyAndNonce, configs);
+    sendSignInRequest(headers, JSON.stringify(inputBody), embeddedKeyAndNonce, configs, LoginMethod.Email);
   };
 
   const completeOtpAuth = async ({
-    otpId,
-    otpCode,
-    organizationId,
-  }: {
-    otpId: string;
-    otpCode: string;
-    organizationId: string;
-  }) => {
-    console.debug("completeOtpAuth called with:", otpId, otpCode, organizationId);
+    token,
+    embeddedKeyAndNonce,
+    configs,
+  }: OtpAuthComplete) => {
+    dispatch({ type: "LOADING", payload: LoginMethod.Email });
+    try {
+      const privateKey = decryptCredentialBundle(token, embeddedKeyAndNonce.privateKey!);
+      const publicKey = uint8ArrayToHexString(getPublicKey(privateKey));
+
+      console.log("Decrypted bundle private key:", privateKey);
+      console.log("Decrypted bundle public key:", publicKey);
+
+      const deleteKey = true; // Set to true to delete the key after use
+      const salt = await getValueWithKey(deleteKey, STORAGE_KEY.EMAIL_SALT)
+      if (!salt) {
+        throw new Error("No salt found in storage");
+      }
+      const organizationId = await getValueWithKey(deleteKey, STORAGE_KEY.ORGANIZATION_ID);
+      if (!organizationId) {
+        throw new Error("No organizationId found in storage");
+      }
+      const userId = await getValueWithKey(deleteKey, STORAGE_KEY.USER_ID);
+      if (!userId) {
+        throw new Error("No userId found in storage");
+      }
+
+      const dydxSession = new DydxTurnkeySession(
+        privateKey, publicKey, configs, organizationId, userId
+      )
+
+      onboardDydx(dydxSession, salt);
+
+    } catch (error: any) {
+      console.error("Error decrypting credential bundle:", error);
+      dispatch({ type: "ERROR", payload: error.message });
+    } finally {
+      dispatch({ type: "LOADING", payload: null });
+    }
   };
 
   // User will be prompted once for passkey creation then will leverage an api key session to have a smooth "one tap" login experience
@@ -167,16 +206,17 @@ export const AuthRelayProvider: React.FC<AuthRelayProviderProps> = ({
       'Accept': 'application/json'
     };
 
-    sendSignInRequest(headers, JSON.stringify(inputBody), embeddedKeyAndNonce, configs);
+    sendSignInRequest(headers, JSON.stringify(inputBody), embeddedKeyAndNonce, configs, LoginMethod.OAuth);
   };
 
   const sendSignInRequest = async (
     headers: HeadersInit,
     body: string,
     embeddedKeyAndNonce: EmbeddedKeyAndNonce,
-    configs: TurnkeyConfigs
+    configs: TurnkeyConfigs,
+    loginMethod: LoginMethod
   ) => {
-    dispatch({ type: "LOADING", payload: LoginMethod.OAuth });
+    dispatch({ type: "LOADING", payload: loginMethod });
     try {
       const response = await fetch(`${configs.backendApiUrl}/v4/turnkey/signin`, {
         method: "POST",
@@ -190,47 +230,92 @@ export const AuthRelayProvider: React.FC<AuthRelayProviderProps> = ({
         throw new Error(`Backend Error: ${errorMsg}`);
       }
 
-      const salt = response.salt;
-      if (!salt) {
-        throw new Error("No salt provided in response");
-      }
-      const session = response.session;
-      if (!session) {
-        throw new Error("No session provided in response");
+      if (loginMethod === LoginMethod.OAuth) {
+        handleOauthResponse(response, embeddedKeyAndNonce, configs);
+      } else if (loginMethod === LoginMethod.Email) {
+        handleEmailResponse(response, embeddedKeyAndNonce, configs);
       }
 
-      const dydxSession = DydxTurnkeySession.createFromSession(
-        embeddedKeyAndNonce.privateKey!,
-        session,
-        configs
-      );
-
-      const accounts = await dydxSession.loadWalletAccounts();
-
-      // get the eth account
-      const ethAccount = accounts.accounts.find((account) => account.addressFormat === "ADDRESS_FORMAT_ETHEREUM");
-      if (!ethAccount) {
-        throw new Error("No Ethereum account found in wallet accounts");
-      }
-      // get the solana account
-      const solanaAccount = accounts.accounts.find((account) => account.addressFormat === "ADDRESS_FORMAT_SOLANA");
-      if (!solanaAccount) {
-        throw new Error("No Solana account found in wallet accounts");
-      }
-
-      const signed = await dydxSession.signOnboardingMessage(ethAccount.address, salt);
-
-      TurnkeyNativeModule.onAuthCompleted(
-        signed,
-        ethAccount.address,
-        solanaAccount.address
-      );
     } catch (error: any) {
       console.error("Error during sign-in:", error);
       dispatch({ type: "ERROR", payload: error.message });
     } finally {
       dispatch({ type: "LOADING", payload: null });
     }
+  }
+
+  const handleOauthResponse = async (
+    response: any,
+    embeddedKeyAndNonce: EmbeddedKeyAndNonce,
+    configs: TurnkeyConfigs,
+  ) => {
+    const salt = response.salt;
+    if (!salt) {
+      throw new Error("No salt provided in response");
+    }
+    const session = response.session;
+    if (!session) {
+      throw new Error("No session provided in response");
+    }
+
+    const dydxSession = DydxTurnkeySession.createFromSession(
+      embeddedKeyAndNonce.privateKey!,
+      session,
+      configs
+    );
+
+    onboardDydx(dydxSession, salt);
+  }
+
+  const onboardDydx = async (
+    dydxSession: DydxTurnkeySession,
+    salt: string,
+  ) => {
+    const accounts = await dydxSession.loadWalletAccounts();
+
+    // get the eth account
+    const ethAccount = accounts.accounts.find((account) => account.addressFormat === "ADDRESS_FORMAT_ETHEREUM");
+    if (!ethAccount) {
+      throw new Error("No Ethereum account found in wallet accounts");
+    }
+    // get the solana account
+    const solanaAccount = accounts.accounts.find((account) => account.addressFormat === "ADDRESS_FORMAT_SOLANA");
+    if (!solanaAccount) {
+      throw new Error("No Solana account found in wallet accounts");
+    }
+
+    const signed = await dydxSession.signOnboardingMessage(ethAccount.address, salt);
+
+    TurnkeyNativeModule.onAuthCompleted(
+      signed,
+      ethAccount.address,
+      solanaAccount.address
+    );
+  };
+
+  const handleEmailResponse = async (
+    response: any,
+    embeddedKeyAndNonce: EmbeddedKeyAndNonce,
+    configs: TurnkeyConfigs,
+  ) => {
+    const salt = response.salt;
+    if (!salt) {
+      throw new Error("No salt provided in response");
+    }
+    const organizationId = response.organizationId;
+    if (!organizationId) {
+      throw new Error("No organizationId provided in response");
+    }
+    const userId = response.userId;
+    if (!userId) {
+      throw new Error("No userId provided in response");
+    }
+
+    // save data needed after the user clicks the magic link to secure store
+    // so that we retain the info if the app is closed
+    setValueWithKey(STORAGE_KEY.EMAIL_SALT, salt);
+    setValueWithKey(STORAGE_KEY.ORGANIZATION_ID, organizationId);
+    setValueWithKey(STORAGE_KEY.USER_ID, userId);
   }
 
   const clearError = () => {

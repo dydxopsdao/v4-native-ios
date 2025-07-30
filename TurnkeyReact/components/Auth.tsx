@@ -44,7 +44,9 @@ export const Auth = ({ configs }: { configs: TurnkeyConfigs }) => {
   const [email, setEmail] = useState<string>('');
   const [isValidEmail, setIsValidEmail] = useState<boolean>(false);
 
-  const embeddedKeyAndNonce = useEmbeddedKeyAndNonce();
+  const oAuthEmbeddedKeyAndNonce = useEmbeddedKeyAndNonce(LoginMethod.OAuth);
+  const emailEmbeddedKeyAndNonce = useEmbeddedKeyAndNonce(LoginMethod.Email);
+
 
   return (
     <ScrollView
@@ -66,10 +68,10 @@ export const Auth = ({ configs }: { configs: TurnkeyConfigs }) => {
 
           {/* Social icons row */}
           <View style={styles.socialRow}>
-            <OAuthInput 
-              onSuccess={loginWithOAuth} 
-              configs={configs} 
-              embeddedKeyAndNonce={embeddedKeyAndNonce} />
+            <OAuthInput
+              onSuccess={loginWithOAuth}
+              configs={configs}
+              embeddedKeyAndNonce={oAuthEmbeddedKeyAndNonce} />
           </View>
 
           {/* Email input row */}
@@ -78,6 +80,8 @@ export const Auth = ({ configs }: { configs: TurnkeyConfigs }) => {
               initialValue={email}
               onEmailChange={setEmail}
               onValidationChange={setIsValidEmail}
+              embeddedKeyAndNonce={emailEmbeddedKeyAndNonce}
+              configs={configs}
             />
             <LoaderButton
               variant="outline"
@@ -87,7 +91,7 @@ export const Auth = ({ configs }: { configs: TurnkeyConfigs }) => {
                 initOtpLogin({
                   otpType: OtpType.Email,
                   contact: email,
-                  embeddedKeyAndNonce: embeddedKeyAndNonce,
+                  embeddedKeyAndNonce: emailEmbeddedKeyAndNonce,
                   configs: configs,
                 })
               }
