@@ -72,15 +72,18 @@ public struct dydxWalletInstance: Codable, Equatable {
     public var secret: String?
     public var passPhrase: String?
 
-    static func V4(ethereumAddress: String?, walletId: String?, cosmoAddress: String, mnemonic: String) -> Self {
-        Self.init(ethereumAddress: ethereumAddress, walletId: walletId, cosmoAddress: cosmoAddress, mnemonic: mnemonic)
+    // Turnkey
+    public var svmAddress: String?
+    public var avalancheAddress: String?
+    public var sourceWalletMnemonic: String?
+    public var loginMethod: String?
+    public var userEmail: String?
+
+    static func V4(ethereumAddress: String?, walletId: String?, cosmoAddress: String, mnemonic: String, svmAddress: String?, avalancheAddress: String?, sourceWalletMnemonic: String?, loginMethod: String?, userEmail: String?) -> Self {
+        Self.init(ethereumAddress: ethereumAddress, walletId: walletId, cosmoAddress: cosmoAddress, mnemonic: mnemonic, svmAddress: svmAddress, avalancheAddress: avalancheAddress, sourceWalletMnemonic: sourceWalletMnemonic, loginMethod: loginMethod, userEmail: userEmail)
     }
 
-    static func V3(ethereumAddress: String?, walletId: String?, apiKey: String, secret: String, passPhrase: String) -> Self {
-        Self.init(ethereumAddress: ethereumAddress, walletId: walletId, apiKey: apiKey, secret: secret, passPhrase: passPhrase)
-    }
-
-    private init(ethereumAddress: String?, walletId: String?, cosmoAddress: String? = nil, mnemonic: String? = nil, subaccountNumber: String? = nil, apiKey: String? = nil, secret: String? = nil, passPhrase: String? = nil) {
+    private init(ethereumAddress: String?, walletId: String?, cosmoAddress: String? = nil, mnemonic: String? = nil, subaccountNumber: String? = nil, apiKey: String? = nil, secret: String? = nil, passPhrase: String? = nil, svmAddress: String? = nil, avalancheAddress: String? = nil, sourceWalletMnemonic: String? = nil, loginMethod: String? = nil, userEmail: String? = nil) {
         self.ethereumAddress = ethereumAddress
         self.walletId = walletId
         self.cosmoAddress = cosmoAddress
@@ -89,6 +92,11 @@ public struct dydxWalletInstance: Codable, Equatable {
         self.apiKey = apiKey
         self.secret = secret
         self.passPhrase = passPhrase
+        self.svmAddress = svmAddress
+        self.avalancheAddress = avalancheAddress
+        self.sourceWalletMnemonic = sourceWalletMnemonic
+        self.loginMethod = loginMethod
+        self.userEmail = userEmail
     }
 
     mutating func merge(another: dydxWalletInstance) {
@@ -113,6 +121,21 @@ public struct dydxWalletInstance: Codable, Equatable {
         }
         if let passPhrase = another.passPhrase {
             self.passPhrase = passPhrase
+        }
+        if let svmAddress = another.svmAddress {
+            self.svmAddress = svmAddress
+        }
+        if let avalancheAddress = another.avalancheAddress {
+            self.avalancheAddress = avalancheAddress
+        }
+        if let sourceWalletMnemonic = another.sourceWalletMnemonic {
+            self.sourceWalletMnemonic = sourceWalletMnemonic
+        }
+        if let loginMethod = another.loginMethod {
+            self.loginMethod = loginMethod
+        }
+        if let userEmail = another.userEmail {
+            self.userEmail = userEmail
         }
     }
 

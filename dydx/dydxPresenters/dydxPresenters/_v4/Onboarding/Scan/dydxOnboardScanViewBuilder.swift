@@ -149,15 +149,11 @@ private class dydxOnboardScanViewPresenter: HostedViewPresenter<dydxOnboardScanV
     private func process(decrypted: String?) {
         if let json = decode(string: decrypted) {
             showingError = false
-            if let address = parser.asString(json["cosmosAddress"]), let mnemonic = parser.asString(json["mnemonic"]) {
+            if let address = parser.asString(json["cosmosAddress"]), let dydxMnemonic = parser.asString(json["mnemonic"]) {
                 // TODO: parse ethereum address when it becomes available in the Sync with Desktop QR Scan flow
-                AbacusStateManager.shared.setV4(ethereumAddress: nil,
-                                                walletId: nil,
-                                                cosmoAddress: address,
-                                                mnemonic: mnemonic,
-                                                isNew: true)
+                let result = dydxWalletSetup.SetupResult(cosmoAddress: address, dydxMnemonic: dydxMnemonic)
                 Router.shared?.navigate(to: RoutingRequest(path: "/action/post_onboarding",
-                                                           params: ["cosmoAddress": address, "mnemonic": mnemonic]),
+                                                           params: ["result": result]),
                                         animated: true, completion: nil)
             } else {
                 showingError = true
@@ -186,27 +182,4 @@ private class dydxOnboardScanViewPresenter: HostedViewPresenter<dydxOnboardScanV
     }
 
     private typealias AESDecryptCompletionBlock = (_ decrypted: String?) -> Void
-}
-
-private class V3WalletConnectionParser {
-    struct Result {
-        let ethereumAddress: String
-        let apiKey: String
-        let secret: String
-        let passPhrase: String
-    }
-
-    static func parse(json: [String: Any]?) -> Result? {
-        let parser = Parser()
-        if let json = json {
-            if let starkKeyPair = json["starkKeyPair"] as? [String: Any], let apiKeyPair = json["apiKeyPair"] as? [String: Any], let ethereumAddress = parser.asString(starkKeyPair["walletAddress"]) {
-                if let secret = parser.asString(apiKeyPair["secret"]),
-                   let key = parser.asString(apiKeyPair["key"]),
-                   let passphrase = parser.asString(apiKeyPair["passphrase"]) {
-                    return Result(ethereumAddress: ethereumAddress, apiKey: key, secret: secret, passPhrase: passphrase)
-                }
-            }
-        }
-        return nil
-    }
 }

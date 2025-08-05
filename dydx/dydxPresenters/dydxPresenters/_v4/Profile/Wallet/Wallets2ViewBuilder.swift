@@ -94,8 +94,13 @@ private class Wallets2ViewPresenter: HostedViewPresenter<Wallets2ViewModel> {
                     AbacusStateManager.shared.setV4(ethereumAddress: wallet.ethereumAddress,
                                                     walletId: wallet.walletId,
                                                     cosmoAddress: cosmoAddress,
-                                                    mnemonic: mnemonic,
-                                                    isNew: true)
+                                                    dydxMnemonic: mnemonic,
+                                                    isNew: true,
+                                                    svmAddress: nil,
+                                                    avalancheAddress: nil,
+                                                    sourceWalletMnemonic: nil,
+                                                    loginMethod: nil,
+                                                    userEmail: nil)
                 }
             }
 
