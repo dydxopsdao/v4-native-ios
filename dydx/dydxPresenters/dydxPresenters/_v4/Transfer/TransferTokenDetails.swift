@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import dydxStateManager
+import Utilities
 
 final class TransferTokenDetails {
     @Published var selectedToken: TransferTokenInfo?
@@ -33,6 +34,13 @@ final class TransferTokenDetails {
 
     var currentInfos: [TransferTokenInfo] {
         _infos
+    }
+
+    // Chains that supports Turnkey embedded wallet deposit
+    var turnkeyInfos: [TransferTokenInfo] {
+        _infos.filter {
+            $0.token == .USDC
+        }
     }
 
     lazy var infos: AnyPublisher<[TransferTokenInfo], Never> =
@@ -100,6 +108,52 @@ final class TransferTokenDetails {
 
 enum TransferChain: String {
     case Ethereum, Optimism, Arbitrum, Base, Polygon, Avalanche, Solana
+
+    var supportedDepositTokenString: String {
+        switch self {
+        case .Ethereum, .Optimism, .Arbitrum, .Base: return "ETH, USDC"
+        case .Polygon: return "POL, USDC"
+        case .Solana: return "USDC"
+        case .Avalanche: return "AVAX, USDC"
+        }
+    }
+
+    var depositFeesString: String {
+        switch self {
+        case .Ethereum: return DataLocalizer.localize(path: "APP.DEPOSIT_MODAL.FREE_ABOVE", params: ["AMOUNT": "$100"])
+        default: return DataLocalizer.localize(path: "APP.GENERAL.FREE")
+        }
+    }
+
+    var depositWarningString: String? {
+        let tokens: String
+        switch self {
+        case .Ethereum, .Optimism, .Arbitrum, .Base: tokens = "ETH " + DataLocalizer.localize(path: "APP.LEAGUES.AND") + " USDC"
+        case .Polygon: tokens =  "POL " + DataLocalizer.localize(path: "APP.LEAGUES.AND") + " USDC"
+        case .Solana: tokens = "USDC"
+        case .Avalanche: tokens =  "AVAX " + DataLocalizer.localize(path: "APP.LEAGUES.AND") + " USDC"
+        }
+
+        return DataLocalizer.localize(path: "APP.DEPOSIT_MODAL.TURNKEY_DEPOSIT_WARNING",
+                                      params: [
+                                       "TOKENS": tokens,
+                                       "NETWORK": self.rawValue
+                                      ])
+    }
+
+    var chainLogoUrl: String {
+        let logoName: String
+        switch self {
+        case .Ethereum: logoName = "ethereum.png"
+        case .Optimism: logoName = "optimism.png"
+        case .Arbitrum: logoName = "arbitrum.png"
+        case .Base: logoName = "base.png"
+        case .Polygon: logoName = "polygon.png"
+        case .Solana: logoName = "solana.png"
+        case .Avalanche: logoName = "avalanche.png"
+        }
+        return AbacusStateManager.shared.deploymentUri + "/chains/\(logoName)"
+    }
 }
 
 enum TransferToken: String {
@@ -117,17 +171,7 @@ struct TransferTokenInfo: Equatable {
     var usdcAmount: Double?
 
     var chainLogoUrl: String {
-        let logoName: String
-        switch chain {
-        case .Ethereum: logoName = "ethereum.png"
-        case .Optimism: logoName = "optimism.png"
-        case .Arbitrum: logoName = "arbitrum.png"
-        case .Base: logoName = "base.png"
-        case .Polygon: logoName = "polygon.png"
-        case .Solana: logoName = "solana.png"
-        case .Avalanche: logoName = "avalanche.png"
-        }
-        return AbacusStateManager.shared.deploymentUri + "/chains/\(logoName)"
+        chain.chainLogoUrl
     }
 
     var tokenLogoUrl: String {
