@@ -17,6 +17,7 @@ import React_RCTAppDelegate
 import dydxTurnkey
 import dydxCartera
 import dydxViews
+import dydxStateManager
 
 public struct OnboardingLandingRoute {
     static var value: String {
@@ -39,15 +40,22 @@ private class dydxTurnkeyAuthViewConntroller: ReactNativeHostingController, Turn
         guard let appScheme = Bundle.main.scheme, appScheme != "{APP_SCHEME}" else {
             fatalError((#file as NSString).lastPathComponent + ": Bundle.main.scheme is nil")
         }
+        guard let googleClientId = CredientialConfig.shared.credential(for: "googleClientId") else {
+            fatalError((#file as NSString).lastPathComponent + ": googleClientId is missing")
+        }
+        guard let turnkeyOrgId = CredientialConfig.shared.credential(for: "turnkeyOrgId") else {
+            fatalError((#file as NSString).lastPathComponent + ": turnkeyOrgId is missing")
+        }
+        guard let indexerUrl = AbacusStateManager.shared.environment?.endpoints.indexers?.first?.api else {
+            fatalError((#file as NSString).lastPathComponent + ": indexerUrl is missing")
+        }
+
         let initialProperties: [String: Any] = [
-            // From https://console.cloud.google.com/auth/clients?inv=1&invt=Ab1olg&project=dydx-v4
-            "googleClientId": "441463123744-a02e7s84okic2ggqgdo7e7hlgpvkj3p8.apps.googleusercontent.com",
+            "googleClientId": googleClientId,
             "appScheme": appScheme,
             "turnkeyUrl": "https://api.turnkey.com",
-            // From Turnkey console
-            "turnkeyOrgId": "3174ac51-1637-47d8-9456-19549963e2ed",
-            // Indexer backend
-            "backendApiUrl": "http://dev2-indexer-apne1-lb-public-2076363889.ap-northeast-1.elb.amazonaws.com",
+            "turnkeyOrgId": turnkeyOrgId,
+            "backendApiUrl": indexerUrl,
             "theme": dydxThemeSettings.shared.currentThemeType.rnThemeIdentifier
         ]
         let stringKeys: [DataLocalizer.Entry] = [
@@ -61,6 +69,8 @@ private class dydxTurnkeyAuthViewConntroller: ReactNativeHostingController, Turn
             .init(path: "APP.TURNKEY_ONBOARD.CHECK_EMAIL_TITLE"),
             .init(path: "APP.TURNKEY_ONBOARD.CHECK_EMAIL_DESCRIPTION"),
             .init(path: "APP.TURNKEY_ONBOARD.RESEND"),
+            .init(path: "APP.TURNKEY_ONBOARD.CONTINUE_SIGN_IN_TITLE"),
+            .init(path: "APP.TURNKEY_ONBOARD.CONTINUE_SIGN_IN_DESCRIPTION"),
             .init(path: "APP.GENERAL.OR")
         ]
         super.init(moduleName: "TurnkeyLogin",
@@ -119,17 +129,22 @@ private class dydxTurnkeyAuthViewConntroller: ReactNativeHostingController, Turn
                let dydxMnemonic = self?.parser.asString(resultObject["mnemonic"]),
                let cosmoAddress = self?.parser.asString(resultObject["address"]) {
 
-                Router.shared?.navigate(to: RoutingRequest(path: "/action/dismiss"), animated: true) { _, _ in
-                    let result = dydxWalletSetup.SetupResult(ethereumAddress: evmAddress,
-                                                             walletId: "turnkey",
-                                                             cosmoAddress: cosmoAddress,
-                                                             dydxMnemonic: dydxMnemonic,
-                                                             svmAddress: svmAddress,
-                                                             avalancheAddress: nil,
-                                                             sourceWalletMnemonic: mnemonics,
-                                                             loginMethod: loginMethod,
-                                                             userEmail: userEmail)
-                    dydxOnboardCompletion.finish(walletInstance: nil, result: result)
+                TurnkeyBridgeManager.shared.uploadDydxAddress(dydxAddress: cosmoAddress) { success, _ in
+                    guard success else {
+                        return
+                    }
+                    Router.shared?.navigate(to: RoutingRequest(path: "/action/dismiss"), animated: true) { _, _ in
+                        let result = dydxWalletSetup.SetupResult(ethereumAddress: evmAddress,
+                                                                 walletId: "turnkey",
+                                                                 cosmoAddress: cosmoAddress,
+                                                                 dydxMnemonic: dydxMnemonic,
+                                                                 svmAddress: svmAddress,
+                                                                 avalancheAddress: nil,
+                                                                 sourceWalletMnemonic: mnemonics,
+                                                                 loginMethod: loginMethod,
+                                                                 userEmail: userEmail)
+                        dydxOnboardCompletion.finish(walletInstance: nil, result: result)
+                    }
                 }
             } else {
                 ErrorInfo.shared?.info(title: "Error", message: "deriveCosmosKey failed", type: .error, error: nil)
