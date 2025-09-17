@@ -149,9 +149,17 @@ private class dydxTurnkeyAuthViewConntroller: ReactNativeHostingController, Turn
             if let resultObject = (data as? String)?.jsonDictionary,
                let dydxMnemonic = self?.parser.asString(resultObject["mnemonic"]),
                let cosmoAddress = self?.parser.asString(resultObject["address"]) {
-
+                
                 if dydxAddress?.isNotEmpty ?? false {
                     if dydxAddress != cosmoAddress {
+                        Tracking.shared?.log(event: "TurnkeyAddressMismatch",
+                                             data: [
+                                                "turnkeyAddress" : dydxAddress ?? "",
+                                                "derivedAddress" : cosmoAddress,
+                                                "loginMethod" : loginMethod,
+                                                "evmAddress" : evmAddress,
+                                                "userEmail" : (userEmail ?? "")
+                                             ])
                         ErrorInfo.shared?.info(title: "Error", message: "dydx address not matching", type: .error, error: nil)
                     } else {
                         self?.completed(evmAddress: evmAddress,
