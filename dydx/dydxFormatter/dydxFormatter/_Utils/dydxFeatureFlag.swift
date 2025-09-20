@@ -16,6 +16,7 @@ public enum dydxBoolFeatureFlag: String, CaseIterable {
     case simple_ui = "ff_simple_ui"
     case privy_ios = "ff_privy_ios"
     case turnkey_ios = "ff_turnkey_ios"
+    case turnkey_ios_apple = "ff_turnkey_ios_apple"
     case rewards_sep_2025 = "ff_rewards_sep_2025"
 
     var defaultValue: Bool {
@@ -31,6 +32,8 @@ public enum dydxBoolFeatureFlag: String, CaseIterable {
         case .privy_ios:
             return false
         case .turnkey_ios:
+            return true
+        case .turnkey_ios_apple:
             return false
         case .rewards_sep_2025:
             return false
@@ -87,7 +90,7 @@ public enum dydxNumberFeatureFlag: String {
         if FeatureService.shared == nil {
             Console.shared.log("WARNING: FeatureService not yet set up.")
         }
-        return FeatureService.shared?.value(feature: rawValue, defaultValue: defaultValue) ?? defaultValue
+        return FeatureService.shared?.value(store: "v4_params", feature: rawValue, defaultValue: defaultValue) ?? defaultValue
     }
 }
 
@@ -101,5 +104,18 @@ public enum dydxStringFeatureFlag: String {
             Console.shared.log("WARNING: FeatureService not yet set up.")
         }
         return FeatureService.shared?.value(feature: rawValue)
+    }
+}
+
+public enum dydxTurnkeyDepositParam: String {
+    case eth_min_slow
+    case eth_min_fast
+    case eth_max
+    case default_min_slow
+    case default_min_fast
+    case default_max
+
+    public var string: String {
+        FeatureService.shared?.value(store: "v4_params", feature: rawValue, defaultValue: "-") ?? "-"
     }
 }
