@@ -123,7 +123,7 @@ def react_pods
 end
 
 abstract_target 'iOS' do
-  platform:ios, '16.0'
+  platform:ios, '17.6'
   
   # config = use_native_modules!
 
@@ -399,6 +399,11 @@ abstract_target 'iOS' do
     react_pods
   end
   
+  target 'dydxFiatRamp' do
+    project '../dydx/dydxFiatRamp/dydxFiatRamp'
+    ios_ui_pods
+  end
+  
   target 'dydxV4' do
     project '../dydxV4/dydxV4'
     ios_ui_pods
@@ -440,7 +445,7 @@ abstract_target 'iOS' do
 
       installer.pods_project.targets.each do |target|
           target.build_configurations.each do |config|
-            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '17.6'
             config.build_settings['SWIFT_VERSION'] = '5.0'
             config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++20'
             

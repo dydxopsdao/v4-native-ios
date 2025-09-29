@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -231,6 +231,8 @@
 		02F99F3E29E4D5750009B3E8 /* dydxTransferSearchItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F99F3D29E4D5750009B3E8 /* dydxTransferSearchItemView.swift */; };
 		02F99F4029E50D3A0009B3E8 /* ChevronBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F99F3F29E50D3A0009B3E8 /* ChevronBackButton.swift */; };
 		02FA5B6F2A12FB040045F2F5 /* dydxTransferWithdrawalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02FA5B6E2A12FB040045F2F5 /* dydxTransferWithdrawalView.swift */; };
+		02FC8A572E862CE5003B5AE8 /* dydxFiatDepositItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02FC8A562E862CE5003B5AE8 /* dydxFiatDepositItemView.swift */; };
+		02FC8C262E8638F8003B5AE8 /* dydxTransferFiatItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02FC8C182E8638F7003B5AE8 /* dydxTransferFiatItemViewModel.swift */; };
 		02FCF0E728E795FA00D350CE /* HostedViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02FCF0E628E795FA00D350CE /* HostedViewPresenter.swift */; };
 		02FD2B8B292307A200A5609E /* LeverageRiskChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02FD2B8A292307A200A5609E /* LeverageRiskChange.swift */; };
 		02FF0BCE29AE928700781EDA /* dydxWalletListView_Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02FF0BCD29AE928700781EDA /* dydxWalletListView_Deprecated.swift */; };
@@ -731,6 +733,8 @@
 		02F99F3D29E4D5750009B3E8 /* dydxTransferSearchItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxTransferSearchItemView.swift; sourceTree = "<group>"; };
 		02F99F3F29E50D3A0009B3E8 /* ChevronBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChevronBackButton.swift; sourceTree = "<group>"; };
 		02FA5B6E2A12FB040045F2F5 /* dydxTransferWithdrawalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxTransferWithdrawalView.swift; sourceTree = "<group>"; };
+		02FC8A562E862CE5003B5AE8 /* dydxFiatDepositItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxFiatDepositItemView.swift; sourceTree = "<group>"; };
+		02FC8C182E8638F7003B5AE8 /* dydxTransferFiatItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxTransferFiatItemViewModel.swift; sourceTree = "<group>"; };
 		02FCF0E628E795FA00D350CE /* HostedViewPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostedViewPresenter.swift; sourceTree = "<group>"; };
 		02FD2B8A292307A200A5609E /* LeverageRiskChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeverageRiskChange.swift; sourceTree = "<group>"; };
 		02FF0BCD29AE928700781EDA /* dydxWalletListView_Deprecated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dydxWalletListView_Deprecated.swift; sourceTree = "<group>"; };
@@ -1080,6 +1084,7 @@
 			children = (
 				023DB0A62D691E3D00F15534 /* dydxInstantDepositSelector.swift */,
 				023DB0AA2D6932ED00F15534 /* dydxInstantDepositInput.swift */,
+				02FC8A562E862CE5003B5AE8 /* dydxFiatDepositItemView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1921,6 +1926,7 @@
 				02F99F3D29E4D5750009B3E8 /* dydxTransferSearchItemView.swift */,
 				023DB0B02D694D1700F15534 /* dydxInstantDepositSearchItemView.swift */,
 				02B23D5E2DD5298D004E727E /* dydxTransferNobleItemView.swift */,
+				02FC8C182E8638F7003B5AE8 /* dydxTransferFiatItemViewModel.swift */,
 				023DB0AC2D6947D800F15534 /* dydxInstantDepositSearchView.swift */,
 			);
 			path = Search;
@@ -2279,6 +2285,8 @@
 				024B79C728B7F53800F7C386 /* PBXTargetDependency */,
 			);
 			name = dydxViewsTests;
+			packageProductDependencies = (
+			);
 			productName = dydxViewsTests;
 			productReference = 024B79C428B7F53800F7C386 /* dydxViewsTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -2302,7 +2310,6 @@
 				};
 			};
 			buildConfigurationList = 024B79B428B7F53800F7C386 /* Build configuration list for PBXProject "dydxViews" */;
-			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -2313,6 +2320,7 @@
 			packageReferences = (
 				027C379D29AEC11000381B00 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
 			);
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 024B79BB28B7F53800F7C386 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -2530,7 +2538,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOS-dydxViews/Pods-iOS-dydxViews-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOS-dydxViews/Pods-iOS-dydxViews-resources.sh\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 		905D757C7E878993AFECAC82 /* [CP] Embed Pods Frameworks */ = {
@@ -2551,7 +2559,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOS-dydxViewsTests/Pods-iOS-dydxViewsTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOS-dydxViewsTests/Pods-iOS-dydxViewsTests-frameworks.sh\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 		C20174BD8243139063D2F35B /* [CP] Check Pods Manifest.lock */ = {
@@ -2573,7 +2581,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 		EE5EFCD73A7E856E07125D6C /* [CP] Check Pods Manifest.lock */ = {
@@ -2595,7 +2603,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 		F9895A3D28B175D88D250BC6 /* [CP] Copy Pods Resources */ = {
@@ -2616,7 +2624,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOS-dydxViewsTests/Pods-iOS-dydxViewsTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOS-dydxViewsTests/Pods-iOS-dydxViewsTests-resources.sh\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -2697,6 +2705,7 @@
 				02A651872DB6DA15006DBD5F /* dydxSimpleUIMenuButtonsView.swift in Sources */,
 				277E90412B1FAEAF005CCBCB /* dydxRewardsHelpView.swift in Sources */,
 				02714C9F29E0C7C500CC1C44 /* TokensComboBox.swift in Sources */,
+				02FC8A572E862CE5003B5AE8 /* dydxFiatDepositItemView.swift in Sources */,
 				64A4DC652968A17C008D8E20 /* dydxTradeInputSideView.swift in Sources */,
 				0279DE912BED610400F9ECF8 /* dydxAdjustMarginReceiptViewModel.swift in Sources */,
 				024FEB7E2ACB82A10087A55E /* NavHeader.swift in Sources */,
@@ -2848,6 +2857,7 @@
 				02C789642D712953004C3284 /* dydxTransferInstantStatusView.swift in Sources */,
 				02F99F2929E4BF8A0009B3E8 /* dydxSearchView.swift in Sources */,
 				272030182A7812B900D233B9 /* UINavigationController+SwipeBackNavigation.swift in Sources */,
+				02FC8C262E8638F8003B5AE8 /* dydxTransferFiatItemViewModel.swift in Sources */,
 				0242E3DB2A9B14D0007605F9 /* dydxReceiptEquityView.swift in Sources */,
 				029CBE6C28F5F3F600259C1D /* dydxMarketFundingChartView.swift in Sources */,
 				02084C682981253200CF9522 /* dydxValidationView.swift in Sources */,
@@ -3139,7 +3149,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3219,7 +3229,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3293,7 +3303,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 75C6UARB5H;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = exchange.dydx.dydxViewsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3312,7 +3322,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 75C6UARB5H;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = exchange.dydx.dydxViewsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";

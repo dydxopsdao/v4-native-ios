@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -379,6 +379,8 @@
 				313EB26421BA270B00BEF926 /* PBXTargetDependency */,
 			);
 			name = RoutingKitAppleTV;
+			packageProductDependencies = (
+			);
 			productName = RoutingKitAppleTV;
 			productReference = 313EB22321BA26D700BEF926 /* RoutingKit.framework */;
 			productType = "com.apple.product-type.framework";
@@ -397,6 +399,8 @@
 				313EB22E21BA26D800BEF926 /* PBXTargetDependency */,
 			);
 			name = RoutingKitAppleTVTests;
+			packageProductDependencies = (
+			);
 			productName = RoutingKitAppleTVTests;
 			productReference = 313EB22B21BA26D800BEF926 /* RoutingKitAppleTVTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -416,6 +420,8 @@
 				3196826821B7948000AE0F28 /* PBXTargetDependency */,
 			);
 			name = RoutingKitAppleWatch;
+			packageProductDependencies = (
+			);
 			productName = RoutingKitAppleWatch;
 			productReference = 3196825B21B7947600AE0F28 /* RoutingKit.framework */;
 			productType = "com.apple.product-type.framework";
@@ -436,6 +442,8 @@
 				311D6F542176EF5400655040 /* PBXTargetDependency */,
 			);
 			name = RoutingKit;
+			packageProductDependencies = (
+			);
 			productName = RoutingKit;
 			productReference = 31E65B01216BCA10008ABEE9 /* RoutingKit.framework */;
 			productType = "com.apple.product-type.framework";
@@ -456,6 +464,8 @@
 				31E65B0D216BCA10008ABEE9 /* PBXTargetDependency */,
 			);
 			name = RoutingKitTests;
+			packageProductDependencies = (
+			);
 			productName = RoutingKitTests;
 			productReference = 31E65B0A216BCA10008ABEE9 /* RoutingKitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -489,7 +499,6 @@
 				};
 			};
 			buildConfigurationList = 31E65AFB216BCA10008ABEE9 /* Build configuration list for PBXProject "RoutingKit" */;
-			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -497,6 +506,7 @@
 				Base,
 			);
 			mainGroup = 31E65AF7216BCA10008ABEE9;
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 31E65B02216BCA10008ABEE9 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -612,7 +622,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 		3A0AEEE2A640025077F4EBD6 /* [CP] Check Pods Manifest.lock */ = {
@@ -634,7 +644,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 		8C9DA90EC5FE4F04F45340BB /* [CP] Embed Pods Frameworks */ = {
@@ -645,13 +655,17 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iOS-RoutingKitTests/Pods-iOS-RoutingKitTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iOS-RoutingKitTests/Pods-iOS-RoutingKitTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
+			outputPaths = (
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOS-RoutingKitTests/Pods-iOS-RoutingKitTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOS-RoutingKitTests/Pods-iOS-RoutingKitTests-frameworks.sh\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -959,10 +973,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -1039,10 +1050,7 @@
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -1070,7 +1078,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = RoutingKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1101,7 +1109,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = RoutingKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1123,7 +1131,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 75C6UARB5H;
 				INFOPLIST_FILE = RoutingKitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1142,7 +1150,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 75C6UARB5H;
 				INFOPLIST_FILE = RoutingKitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

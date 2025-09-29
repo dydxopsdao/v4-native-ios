@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		025DFE822E3159310015E1D7 /* PlatformUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 025DFE7F2E3159270015E1D7 /* PlatformUI.framework */; };
-		0263CB552E787EDA00D843C7 /* Utilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0263CB4C2E787EC900D843C7 /* Utilities.framework */; platformFilter = ios; };
+		0263CB552E787EDA00D843C7 /* Utilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0263CB4C2E787EC900D843C7 /* Utilities.framework */; };
 		35C55D24A41A3DFA2BA54B75 /* Pods_iOS_dydxTurnkey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AE56594D5B2D8D07259C597 /* Pods_iOS_dydxTurnkey.framework */; };
 /* End PBXBuildFile section */
 
@@ -175,6 +175,8 @@
 				02A105502E28537C00E65EE2 /* dydxTurnkey */,
 			);
 			name = dydxTurnkey;
+			packageProductDependencies = (
+			);
 			productName = dydxTurnkey;
 			productReference = 02A1054E2E28537C00E65EE2 /* dydxTurnkey.framework */;
 			productType = "com.apple.product-type.framework";
@@ -260,13 +262,17 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iOS-dydxTurnkey/Pods-iOS-dydxTurnkey-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iOS-dydxTurnkey/Pods-iOS-dydxTurnkey-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
+			outputPaths = (
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOS-dydxTurnkey/Pods-iOS-dydxTurnkey-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOS-dydxTurnkey/Pods-iOS-dydxTurnkey-resources.sh\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 		9A52AED412176393EAC141BA /* [CP] Check Pods Manifest.lock */ = {
@@ -288,7 +294,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -387,10 +393,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -464,10 +467,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -496,7 +496,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -535,7 +535,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

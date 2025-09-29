@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -951,6 +951,8 @@
 			dependencies = (
 			);
 			name = UtilitiesAppleTV;
+			packageProductDependencies = (
+			);
 			productName = UtilitiesAppleTV;
 			productReference = 313A536521B9805F00A92D62 /* Utilities.framework */;
 			productType = "com.apple.product-type.framework";
@@ -969,6 +971,8 @@
 				313A537021B9805F00A92D62 /* PBXTargetDependency */,
 			);
 			name = UtilitiesAppleTVTests;
+			packageProductDependencies = (
+			);
 			productName = UtilitiesAppleTVTests;
 			productReference = 313A536D21B9805F00A92D62 /* UtilitiesAppleTVTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -987,6 +991,8 @@
 			dependencies = (
 			);
 			name = UtilitiesAppleWatch;
+			packageProductDependencies = (
+			);
 			productName = UtilitiesAppleWatch;
 			productReference = 3196823721B791CF00AE0F28 /* Utilities.framework */;
 			productType = "com.apple.product-type.framework";
@@ -1006,6 +1012,8 @@
 			dependencies = (
 			);
 			name = Utilities;
+			packageProductDependencies = (
+			);
 			productName = Utilities;
 			productReference = 31E65AB9216BC9C9008ABEE9 /* Utilities.framework */;
 			productType = "com.apple.product-type.framework";
@@ -1026,6 +1034,8 @@
 				31E65AC5216BC9C9008ABEE9 /* PBXTargetDependency */,
 			);
 			name = UtilitiesTests;
+			packageProductDependencies = (
+			);
 			productName = UtilitiesTests;
 			productReference = 31E65AC2216BC9C9008ABEE9 /* UtilitiesTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -1059,7 +1069,6 @@
 				};
 			};
 			buildConfigurationList = 31E65AB3216BC9C9008ABEE9 /* Build configuration list for PBXProject "Utilities" */;
-			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -1067,6 +1076,7 @@
 				Base,
 			);
 			mainGroup = 31E65AAF216BC9C9008ABEE9;
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 31E65ABA216BC9C9008ABEE9 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1138,7 +1148,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 		160F8B73951F762A10CB5455 /* [CP] Embed Pods Frameworks */ = {
@@ -1149,13 +1159,17 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iOS-UtilitiesTests/Pods-iOS-UtilitiesTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iOS-UtilitiesTests/Pods-iOS-UtilitiesTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
+			outputPaths = (
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOS-UtilitiesTests/Pods-iOS-UtilitiesTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOS-UtilitiesTests/Pods-iOS-UtilitiesTests-frameworks.sh\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 		C4AE1B01FCD415A3B086A427 /* [CP] Check Pods Manifest.lock */ = {
@@ -1177,7 +1191,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1697,10 +1711,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -1777,10 +1788,7 @@
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -1809,7 +1817,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = Utilities/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1842,7 +1850,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = Utilities/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1865,7 +1873,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 75C6UARB5H;
 				INFOPLIST_FILE = UtilitiesTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1884,7 +1892,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 75C6UARB5H;
 				INFOPLIST_FILE = UtilitiesTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
